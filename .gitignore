@@ -1,0 +1,17 @@
+# Ignore the node_modules folder (installed dependencies)
+node_modules/
+
+# Ignore the dist folder (compiled TypeScript output)
+dist/
+
+# Ignore log files
+*.log
+
+# Ignore package-lock.json (optional, if you want to exclude lock files)
+package-lock.json
+
+# Ignore TypeScript cache
+*.tsbuildinfo
+
+# Ignore MacOS system files (if you're working on macOS)
+.DS_Store
