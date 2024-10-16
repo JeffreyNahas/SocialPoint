@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    /* Language and Environment */
+    "target": "es2016",                                  /* Set the JavaScript language version for emitted JavaScript. */
+    
+    /* Modules */
+    "module": "commonjs",                                /* Use CommonJS module code generation. */
+    "outDir": "./dist",                                  /* Output folder for all emitted files (compiled JavaScript). */
+    "rootDir": "./src",                                  /* Specify the root folder for your TypeScript source files. */
+    
+    /* Emit */
+    "sourceMap": true,                                   /* Enable source map generation for debugging. */
+    
+    /* Interop Constraints */
+    "esModuleInterop": true,                             /* Enable interoperability between ES modules and CommonJS modules. */
+    "forceConsistentCasingInFileNames": true,            /* Ensure that casing in imports is consistent. */
+    
+    /* Type Checking */
+    "strict": true,                                      /* Enable strict type-checking options. */
+    "skipLibCheck": true,                                /* Skip type checking all .d.ts files. */
+    "strictNullChecks": true                             /* Enable strict null checks to handle undefined and null types safely. */
+  },
+  "include": ["src/**/*"],                               /* Include all TypeScript files in the src directory. */
+  "exclude": ["node_modules"]                            /* Exclude the node_modules directory from being compiled. */
+}
