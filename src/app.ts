@@ -1,6 +1,6 @@
 import 'dotenv/config'; // Load environment variables from .env file
 import express, { Request, Response } from 'express';
-import { AppDataSource } from './src/data-source'; // Import your TypeORM data source
+import { AppDataSource } from './data-source'; // Import your TypeORM data source
 import bodyParser from 'body-parser';
 import cors from 'cors';
 
