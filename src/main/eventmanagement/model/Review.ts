@@ -10,23 +10,23 @@ export class Review {
     @PrimaryGeneratedColumn()
     private id!: number;
 
-    @ManyToOne(() => Event, (event) => event.getReviews())
-    private event: Event;
+    @ManyToOne(() => Event, (event) => event.reviews)
+    event: Event;
 
-    @ManyToOne(() => User, (user) => user.getReviews())
-    private user: User;
+    @ManyToOne(() => User, (user) => user.reviews)
+    user: User;
 
     @Column()
-    private rating: Rating;
+    rating: Rating;
 
     @Column({type: "timestamp"})
-    private reviewDate: Date;
+    reviewDate: Date;
 
     @Column()
-    private comment: string;
+    comment: string;
 
-    @OneToMany(() => Reply, (reply) => reply.getReview())
-    private replies: Reply[];
+    @OneToMany(() => Reply, (reply) => reply.review)
+    replies: Reply[];
 
 
     constructor(event: Event, user: User, rating: Rating, comment: string) {

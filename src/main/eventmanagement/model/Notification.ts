@@ -10,17 +10,17 @@ export class Notification {
     id!: number;
 
     @Column()
-    private message: string;
+    message: string;
 
     @Column()
-    private timestamp: Date;
+    timestamp: Date;
 
-    @ManyToOne(() => Event, (event) => event.getNotifications(), { onDelete: "CASCADE", eager: true })
+    @ManyToOne(() => Event, (event) => event.notifications, { onDelete: "CASCADE", eager: true })
     @JoinColumn()
-    private event: Event;
+    event: Event;
 
     @Column()
-    private notificationType: string; // Can be 'attendee' or 'organizer'
+    notificationType: string; // Can be 'attendee' or 'organizer'
 
 
     constructor(message: string, timestamp: Date, event: Event, notificationType: string) {

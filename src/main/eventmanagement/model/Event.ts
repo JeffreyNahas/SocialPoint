@@ -23,53 +23,49 @@ export class Event {
     id!: number;
   
     @Column()
-    private name: string;
+    name: string;
   
     @Column({ type: 'text' })
-    private description: string;
+    description: string;
   
     @ManyToOne(() => Venue, { cascade: true, eager: true })
     @JoinColumn()
-    private venue: Venue;
+    venue: Venue;
   
     @Column({ type: 'date' })
-    private date: Date;
+    date: Date;
   
     @Column({ type: 'time' })
-    private startTime: Date;
+    startTime: Date;
   
     @Column({ type: 'time' })
-    private endTime: Date;
+    endTime: Date;
   
-    @Column({
-        type: 'enum',
-        enum: Category,
-        //default: Category.EDUCATION, // Default value if needed
-      })
-    private category: Category;
+    @Column()
+    category: Category;
   
     @ManyToOne(() => User, { cascade: true, eager: true })
     @JoinColumn()
-    private organizer: User;
+    organizer: User;
   
     @ManyToMany(() => User, { cascade: true })
     @JoinTable()
-    private attendees: Set<User>;
+    attendees: Set<User>;
   
     @OneToMany(() => UserEventRole, (userEventRole) => userEventRole.event)
     userEventRoles!: UserEventRole[];
   
-    @OneToMany(() => Notification, (notification) => notification.getEvent())
-    private attendeeNotifications: Notification[];
+    @OneToMany(() => Notification, (notification) => notification.event)
+    attendeeNotifications: Notification[];
   
-    @OneToMany(() => Notification, (notification) => notification.getEvent())
-    private organizerNotifications: Notification[];
+    @OneToMany(() => Notification, (notification) => notification.event)
+    organizerNotifications: Notification[];
 
-    @OneToMany(() => Notification, (notification) => notification.getEvent())
-    private notifications: Notification[];
+    @OneToMany(() => Notification, (notification) => notification.event)
+    notifications: Notification[];
 
-    @OneToMany(() => Review, (review) => review.getEvent())
-    private reviews: Review[];
+    @OneToMany(() => Review, (review) => review.event)
+    reviews: Review[];
 
     
     constructor(name: string, description: string, venue: Venue, date: Date, startTime: Date, endTime: Date, category: Category, organizer: User) {

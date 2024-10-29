@@ -7,17 +7,17 @@ export class Reply {
     @PrimaryGeneratedColumn()
     private id!: number;
 
-    @ManyToOne(() => User, (user) => user.getReviews())
-    private user: User;
+    @ManyToOne(() => User, (user) => user.reviews)
+    user: User;
 
     @Column()
-    private comment: string;
+    comment: string;
 
     @Column({type: "timestamp"})
-    private replyDate: Date;
+    replyDate: Date;
 
-    @ManyToOne(() => Review, (review) => review.getReplies())
-    private review: Review;
+    @ManyToOne(() => Review, (review) => review.replies)
+    review: Review;
 
     constructor(user: User, comment: string, review: Review) {
         this.user = user;

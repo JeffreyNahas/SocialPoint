@@ -6,15 +6,15 @@ export class Venue {
     id!: number;
 
     @Column()
-    private name: string;
+    name: string;
 
     @Column()
-    private location: string;
+    location: string;
 
     @Column()
-    private capacity: number;
+    capacity: number;
 
-    @OneToMany(() => Event, (event) => event.getVenue())
+    @OneToMany(() => Event, (event) => event.venue)
     events!: Event[];
 
     constructor(name: string, location: string, capacity: number) {

@@ -31,7 +31,7 @@ import {
     @UpdateDateColumn()
     private updatedAt: Date;
   
-    @OneToOne(() => User, (user) => user.getUserAccount())
+    @OneToOne(() => User, (user) => user.userAccount)
     user!: User;
   
     constructor(name: string, email: string, phoneNumber: string, password: string) {
