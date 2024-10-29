@@ -40,7 +40,7 @@ export class User {
     friends: Set<User>;
 
     @OneToMany(() => Review, (review) => review.user)
-    reviews: Review[];
+    reviews!: Review[];
 
     constructor(userAccount: UserAccount) {
         this.userAccount = userAccount;
@@ -48,7 +48,6 @@ export class User {
         this.attendedEvents = new Set<Event>();
         this.organizedEvents = new Set<Event>();
         this.friends = new Set<User>();
-        this.reviews = [];
     }
 
     public getReviews(): Review[] {

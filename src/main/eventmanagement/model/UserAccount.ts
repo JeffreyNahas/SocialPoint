@@ -26,21 +26,20 @@ import {
     private password: string;
   
     @CreateDateColumn()
-    private createdAt: Date;
+    private createdAt!: Date;
   
     @UpdateDateColumn()
-    private updatedAt: Date;
+    private updatedAt!: Date;
   
     @OneToOne(() => User, (user) => user.userAccount)
     user!: User;
+
   
     constructor(name: string, email: string, phoneNumber: string, password: string) {
       this.fullName = name;
       this.email = email;
       this.phoneNumber = phoneNumber;
       this.password = password;
-      this.createdAt = new Date();
-      this.updatedAt = new Date();
     }
   
     public getFullName(): string {

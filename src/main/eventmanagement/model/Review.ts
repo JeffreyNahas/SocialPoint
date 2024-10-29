@@ -26,7 +26,7 @@ export class Review {
     comment: string;
 
     @OneToMany(() => Reply, (reply) => reply.review)
-    replies: Reply[];
+    replies!: Reply[];
 
 
     constructor(event: Event, user: User, rating: Rating, comment: string) {
@@ -35,7 +35,6 @@ export class Review {
         this.rating = rating;
         this.reviewDate = new Date();
         this.comment = comment;
-        this.replies = [];
     }
 
     public getReplies(): Reply[] {

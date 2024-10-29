@@ -56,16 +56,16 @@ export class Event {
     userEventRoles!: UserEventRole[];
   
     @OneToMany(() => Notification, (notification) => notification.event)
-    attendeeNotifications: Notification[];
+    attendeeNotifications!: Notification[];
   
     @OneToMany(() => Notification, (notification) => notification.event)
-    organizerNotifications: Notification[];
+    organizerNotifications!: Notification[];
 
     @OneToMany(() => Notification, (notification) => notification.event)
-    notifications: Notification[];
+    notifications!: Notification[];
 
     @OneToMany(() => Review, (review) => review.event)
-    reviews: Review[];
+    reviews!: Review[];
 
     
     constructor(name: string, description: string, venue: Venue, date: Date, startTime: Date, endTime: Date, category: Category, organizer: User) {
@@ -78,10 +78,6 @@ export class Event {
         this.endTime = endTime;
         this.organizer = organizer;
         this.attendees = new Set<User>();
-        this.attendeeNotifications = [];
-        this.organizerNotifications = [];
-        this.notifications = [];
-        this.reviews = [];
     }
 
     public getName(): string {
