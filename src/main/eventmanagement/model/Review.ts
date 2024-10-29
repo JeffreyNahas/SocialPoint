@@ -1,15 +1,33 @@
+import { Entity, ManyToOne, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm";
 import { User } from "./User";
 import { Event } from "./Event";
 import { Rating } from "./ReviewRating";
 import { Reply } from "./Reply";
+import { Notification } from "./Notification";
 
+@Entity()
 export class Review {
+    @PrimaryGeneratedColumn()
+    private id!: number;
+
+    @ManyToOne(() => Event, (event) => event.getReviews())
     private event: Event;
+
+    @ManyToOne(() => User, (user) => user.getReviews())
     private user: User;
+
+    @Column()
     private rating: Rating;
+
+    @Column({type: "timestamp"})
     private reviewDate: Date;
+
+    @Column()
     private comment: string;
+
+    @OneToMany(() => Reply, (reply) => reply.getReview())
     private replies: Reply[];
+
 
     constructor(event: Event, user: User, rating: Rating, comment: string) {
         this.event = event;
@@ -24,8 +42,10 @@ export class Review {
         return this.replies;
     }
 
+
     public addReply(reply: Reply): void {
         this.replies.push(reply);
+        this.event.addNotification(new Notification(`${reply.getUser().getUserAccount().getFullName()} replied to your review`, new Date(), this.event, "attendee"));
     }
 
     public removeReply(reply: Reply): void {

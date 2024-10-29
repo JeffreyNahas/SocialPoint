@@ -1,0 +1,33 @@
+import {
+    Entity,
+    PrimaryGeneratedColumn,
+    ManyToOne,
+    Column,
+    JoinColumn
+  } from 'typeorm';
+  import { User } from './User';
+  import { Event } from './Event';
+  import {Role} from './UserRole';
+  
+  @Entity()
+  export class UserEventRole {
+    @PrimaryGeneratedColumn()
+    id!: number;
+  
+    @ManyToOne(() => User, (user) => user.userEventRoles, { onDelete: 'CASCADE' })
+    @JoinColumn({ name: 'user_id' })
+    user!: User;
+  
+    @ManyToOne(() => Event, (event) => event.userEventRoles, { onDelete: 'CASCADE' })
+    @JoinColumn({ name: 'event_id' })
+    event!: Event;
+  
+    @Column()
+    role!: Role;  // Role can be a string (e.g., 'Organizer', 'Participant')
+
+    constructor(user: User, event: Event, role: Role) {
+        this.user = user;
+        this.event = event;
+        this.role = role;
+    }
+  }

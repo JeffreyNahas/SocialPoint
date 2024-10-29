@@ -7,9 +7,6 @@ dist/
 # Ignore log files
 *.log
 
-# Ignore package-lock.json (optional, if you want to exclude lock files)
-package-lock.json
-
 # Ignore TypeScript cache
 *.tsbuildinfo
 

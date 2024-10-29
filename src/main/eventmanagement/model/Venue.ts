@@ -1,7 +1,21 @@
+import { OneToMany, PrimaryGeneratedColumn, Column } from "typeorm";
+import { Event } from "./Event";
+
 export class Venue {
+    @PrimaryGeneratedColumn()
+    id!: number;
+
+    @Column()
     private name: string;
+
+    @Column()
     private location: string;
+
+    @Column()
     private capacity: number;
+
+    @OneToMany(() => Event, (event) => event.getVenue())
+    events!: Event[];
 
     constructor(name: string, location: string, capacity: number) {
         this.name = name;

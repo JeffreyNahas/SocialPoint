@@ -1,43 +1,81 @@
-import { Role } from "./UserRole";  
+import {
+    Entity,
+    PrimaryGeneratedColumn,
+    Column,
+    ManyToMany,
+    OneToMany,
+    ManyToOne,
+    JoinTable,
+    OneToOne,
+    JoinColumn,
+  } from 'typeorm';
+
+import { UserEventRole } from './UserEventRole';
 import { Event } from "./Event";
 import { UserAccount } from "./UserAccount";
+import { Review } from "./Review";
 
+@Entity()
 export class User {
 
+    @PrimaryGeneratedColumn()
+    private id!: number;
+
+    @OneToOne(() => UserAccount, { cascade: true, eager: true })
+    @JoinColumn()
     private userAccount: UserAccount;
-    private roles: Map<Event, Role>;
+
+    @OneToMany(() => UserEventRole, (userEventRole) => userEventRole.user)
+    userEventRoles!: UserEventRole[];
     
+    @ManyToMany(() => Event, { cascade: true })
+    @JoinTable()
     private attendedEvents: Set<Event>;
+
+    @OneToMany(() => Event, (event) => event.getOrganizer(), { cascade: true })
     private organizedEvents: Set<Event>;
+
+    @ManyToMany(() => User, { cascade: true })
+    @JoinTable()
     private friends: Set<User>;
+
+    @OneToMany(() => Review, (review) => review.getUser())
+    private reviews: Review[];
 
     constructor(userAccount: UserAccount) {
         this.userAccount = userAccount;
-        this.roles = new Map<Event, Role>();
+        this.userEventRoles = [];
         this.attendedEvents = new Set<Event>();
         this.organizedEvents = new Set<Event>();
         this.friends = new Set<User>();
+        this.reviews = [];
+    }
+
+    public getReviews(): Review[] {
+        return this.reviews;
     }
 
     public getUserAccount(): UserAccount {
         return this.userAccount;
     }
-
-    public getRoleForEvent(event: Event): Role | undefined {
-        return this.roles.get(event);
+    
+    public getUserEventRole(event: Event): UserEventRole | undefined {
+        return this.userEventRoles.find((userEventRole) => userEventRole.event === event);
     }
+
+    public setUserEventRole(userEventRole: UserEventRole): void {
+        this.userEventRoles.push(userEventRole);
+    }
+
+    public removeUserEventRole(userEventRole: UserEventRole): void {
+        this.userEventRoles = this.userEventRoles.filter((role) => role !== userEventRole);
+    }
+
 
     public setUserAccount(userAccount: UserAccount): void {
         this.userAccount = userAccount;
     }
 
-    public setRoleForEvent(event: Event, role: Role): void {
-        this.roles.set(event, role);
-    }
-
-    public removeRoleForEvent(event: Event): void {
-        this.roles.delete(event);
-    }
 
     public attendEvent(event: Event): void {
         this.attendedEvents.add(event);
@@ -84,7 +122,7 @@ export class User {
     }
 
     public hasRoleForEvent(event: Event): boolean {
-        return this.roles.has(event);
+        return this.userEventRoles.some((userEventRole) => userEventRole.event === event);
     }
 
 

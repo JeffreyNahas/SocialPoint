@@ -1,23 +1,75 @@
+import {
+    Entity,     
+    PrimaryGeneratedColumn,
+    Column,
+    OneToMany,
+    ManyToOne,
+    ManyToMany,
+    JoinColumn,
+    JoinTable,
+} from 'typeorm';
 import { User } from "./User";
 import { Venue } from "./Venue";
 import { Category } from "./Category";
+import { UserEventRole } from "./UserEventRole";
+import { Review } from "./Review";
 
 // Handling Notifications triggered by the Event
 import { Notification } from "./Notification";
 
+@Entity()
 export class Event {
+    @PrimaryGeneratedColumn()
+    id!: number;
+  
+    @Column()
     private name: string;
+  
+    @Column({ type: 'text' })
     private description: string;
+  
+    @ManyToOne(() => Venue, { cascade: true, eager: true })
+    @JoinColumn()
     private venue: Venue;
+  
+    @Column({ type: 'date' })
     private date: Date;
+  
+    @Column({ type: 'time' })
     private startTime: Date;
+  
+    @Column({ type: 'time' })
     private endTime: Date;
-    private category: Category;     
+  
+    @Column({
+        type: 'enum',
+        enum: Category,
+        //default: Category.EDUCATION, // Default value if needed
+      })
+    private category: Category;
+  
+    @ManyToOne(() => User, { cascade: true, eager: true })
+    @JoinColumn()
     private organizer: User;
+  
+    @ManyToMany(() => User, { cascade: true })
+    @JoinTable()
     private attendees: Set<User>;
+  
+    @OneToMany(() => UserEventRole, (userEventRole) => userEventRole.event)
+    userEventRoles!: UserEventRole[];
+  
+    @OneToMany(() => Notification, (notification) => notification.getEvent())
+    private attendeeNotifications: Notification[];
+  
+    @OneToMany(() => Notification, (notification) => notification.getEvent())
+    private organizerNotifications: Notification[];
 
-    private AttendeeNotifications: Notification[];
-    private OrganizerNotifications: Notification[];
+    @OneToMany(() => Notification, (notification) => notification.getEvent())
+    private notifications: Notification[];
+
+    @OneToMany(() => Review, (review) => review.getEvent())
+    private reviews: Review[];
 
     
     constructor(name: string, description: string, venue: Venue, date: Date, startTime: Date, endTime: Date, category: Category, organizer: User) {
@@ -30,8 +82,10 @@ export class Event {
         this.endTime = endTime;
         this.organizer = organizer;
         this.attendees = new Set<User>();
-        this.AttendeeNotifications = [];
-        this.OrganizerNotifications = [];
+        this.attendeeNotifications = [];
+        this.organizerNotifications = [];
+        this.notifications = [];
+        this.reviews = [];
     }
 
     public getName(): string {
@@ -69,13 +123,22 @@ export class Event {
         return this.attendees;
     }
 
-    public getNotifications(): Notification[] {
-        return this.AttendeeNotifications;
+    public getAttendeeNotifications(): Notification[] {
+        return this.attendeeNotifications;
     }
 
     public getOrganizerNotifications(): Notification[] {
-        return this.OrganizerNotifications;
+        return this.organizerNotifications;
     }
+
+    public getNotifications(): Notification[] {
+        return this.notifications;
+    }
+
+    public getReviews(): Review[] {
+        return this.reviews;
+    }
+
 
     public setName(name: string): void {
         this.name = name;
@@ -109,51 +172,61 @@ export class Event {
         this.organizer = organizer;
     }
 
+    public addReview(review: Review): void {
+        this.reviews.push(review);
+        this.addNotification(new Notification(`${review.getUser().getUserAccount().getFullName()} reviewed ${this.name}`, new Date(), this, "organizer"));
+    }
+
+
     public addAttendeeNotification(notification: Notification): void {
-        this.AttendeeNotifications.push(notification);
+        if (notification.getNotificationType() === "attendee") {
+            this.attendeeNotifications.push(notification);
+        }
     }
 
     public addOrganizerNotification(notification: Notification): void {
-        this.OrganizerNotifications.push(notification);
+        if (notification.getNotificationType() === "organizer") {   
+            this.organizerNotifications.push(notification);
+        }
+    }
+
+    public addNotification(notification: Notification): void {
+        this.notifications.push(notification);
     }
 
     public updateDate(newDate: Date): void {
         this.date = newDate;
-        this.addAttendeeNotification(new Notification(`${this.name}Date updated to ${newDate.toISOString()}`, new Date()));
-        this.addOrganizerNotification(new Notification(`$You have successfully updated the Date for ${this.name}}`, new Date()));
+        this.addNotification(new Notification(`${this.name} Date updated to ${newDate.toISOString()}`, new Date(), this, "attendee"));
+        this.addNotification(new Notification(`$You have successfully updated the Date for ${this.name}}`, new Date(), this, "organizer"))
     }
-
     public updateStartTime(newStartTime: Date): void {
         this.startTime = newStartTime;
-        this.addAttendeeNotification(new Notification(`${this.name} Start Time updated to ${newStartTime.toISOString()}`, new Date()));
-        this.addOrganizerNotification(new Notification(`$You have successfully updated the Start Time for ${this.name}}`, new Date()));
+        this.addNotification(new Notification(`${this.name} Start Time updated to ${newStartTime.toISOString()}`, new Date(), this, "attendee"));
+        this.addNotification(new Notification(`$You have successfully updated the Start Time for ${this.name}}`, new Date(), this, "organizer"));
     }
-
     public updateEndTime(newEndTime: Date): void {
         this.endTime = newEndTime;
-        this.addAttendeeNotification(new Notification(`${this.name} End Time updated to ${newEndTime.toISOString()}`, new Date()));
-        this.addOrganizerNotification(new Notification(`$You have successfully updated the End Time for ${this.name}}`, new Date()));
+        this.addNotification(new Notification(`${this.name} End Time updated to ${newEndTime.toISOString()}`, new Date(), this, "attendee"));
+        this.addNotification(new Notification(`$You have successfully updated the End Time for ${this.name}}`, new Date(), this, "organizer"));
     }
-
     public updateVenue(newVenue: Venue): void {
         this.venue = newVenue;
-        this.addAttendeeNotification(new Notification(`${this.name} Venue updated to ${newVenue.getName()}`, new Date()));
-        this.addOrganizerNotification(new Notification(`$You have successfully updated the Venue for ${this.name}}`, new Date()));
+        this.addNotification(new Notification(`${this.name} Venue updated to ${newVenue.getName()}`, new Date(), this, "attendee"));
+        this.addNotification(new Notification(`$You have successfully updated the Venue for ${this.name}}`, new Date(), this, "organizer"));
     }
 
     public updateDescription(newDescription: string): void {
         this.description = newDescription;
-        this.addOrganizerNotification(new Notification(`$You have successfully updated the Description for ${this.name}}`, new Date()));
+        this.addNotification(new Notification(`$You have successfully updated the Description for ${this.name}}`, new Date(), this, "organizer"));
     }
-
     public updateCategory(newCategory: Category): void {
         this.category = newCategory;
-        this.addOrganizerNotification(new Notification(`$You have successfully updated the Category for ${this.name}}`, new Date()));
+        this.addNotification(new Notification(`$You have successfully updated the Category for ${this.name}}`, new Date(), this, "organizer"));
     }
 
     public updateName(newName: string): void {
         this.name = newName;
-        this.addOrganizerNotification(new Notification(`$You have successfully updated the Name for ${this.name}}`, new Date()));
+        this.addNotification(new Notification(`${this.name} Name updated to ${newName}`, new Date(), this, "organizer"));
     }
     public addAttendee(user: User): void {
         this.attendees.add(user);
@@ -161,6 +234,10 @@ export class Event {
 
     public removeAttendee(user: User): void {
         this.attendees.delete(user);
+    }
+
+    public removeReview(review: Review): void {
+        this.reviews = this.reviews.filter(r => r !== review);
     }
 
     public hasAttendee(user: User): boolean {
