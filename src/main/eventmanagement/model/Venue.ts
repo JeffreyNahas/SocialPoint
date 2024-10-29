@@ -1,6 +1,7 @@
-import { OneToMany, PrimaryGeneratedColumn, Column } from "typeorm";
+import { OneToMany, PrimaryGeneratedColumn, Column, Entity } from "typeorm";
 import { Event } from "./Event";
 
+@Entity()
 export class Venue {
     @PrimaryGeneratedColumn()
     id!: number;
