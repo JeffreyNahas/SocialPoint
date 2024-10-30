@@ -5,7 +5,7 @@ import { User } from "./User";
 @Entity()
 export class Reply {
     @PrimaryGeneratedColumn()
-    private id!: number;
+    id!: number;
 
     @ManyToOne(() => User, (user) => user.reviews)
     user: User;
@@ -49,6 +49,6 @@ export class Reply {
     public getReview(): Review {
         return this.review;
     }
-    
+
 
 }
