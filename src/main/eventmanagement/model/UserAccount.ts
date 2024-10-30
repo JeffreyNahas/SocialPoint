@@ -5,6 +5,7 @@ import {
     OneToOne,
     CreateDateColumn,
     UpdateDateColumn,
+    JoinColumn,
   } from 'typeorm';
   import { User } from './User';
   
@@ -14,13 +15,13 @@ import {
     id!: number;
   
     @Column()
-    private fullName: string;
+    fullName: string;
   
     @Column({ unique: true })
-    private email: string;
+    email: string;
   
     @Column()
-    private phoneNumber: string;
+    phoneNumber: string;
   
     @Column()
     private password: string;
@@ -32,6 +33,7 @@ import {
     private updatedAt!: Date;
   
     @OneToOne(() => User, (user) => user.userAccount)
+    @JoinColumn({name: 'user_id', referencedColumnName: 'user_id'})
     user!: User;
 
   

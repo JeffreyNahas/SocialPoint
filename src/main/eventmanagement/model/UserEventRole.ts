@@ -14,12 +14,12 @@ import {
     @PrimaryGeneratedColumn()
     id!: number;
   
-    @ManyToOne(() => User, (user) => user.userEventRoles, { onDelete: 'CASCADE' })
-    @JoinColumn({ name: 'user_id' })
+    @ManyToOne(() => User, (user) => user.userEventRoles)
+    @JoinColumn()
     user!: User;
   
-    @ManyToOne(() => Event, (event) => event.userEventRoles, { onDelete: 'CASCADE' })
-    @JoinColumn({ name: 'event_id' })
+    @ManyToOne(() => Event, (event) => event.userEventRoles)
+    @JoinColumn()
     event!: Event;
   
     @Column()

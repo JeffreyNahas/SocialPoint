@@ -19,7 +19,7 @@ import { Review } from "./Review";
 export class User {
 
     @PrimaryGeneratedColumn()
-    private id!: number;
+    id!: number;
 
     @OneToOne(() => UserAccount, { cascade: true, eager: true })
     @JoinColumn()
@@ -30,24 +30,21 @@ export class User {
     
     @ManyToMany(() => Event, { cascade: true })
     @JoinTable()
-    attendedEvents: Set<Event>;
+    attendedEvents!: Set<Event>;
 
-    @OneToMany(() => Event, (event) => event.organizer, { cascade: true })
-    organizedEvents: Set<Event>;
+    @ManyToMany(() => Event,{ cascade: true })
+    @JoinTable()
+    organizedEvents!: Set<Event>;
 
     @ManyToMany(() => User, { cascade: true })
     @JoinTable()
-    friends: Set<User>;
+    friends!: Set<User>;
 
     @OneToMany(() => Review, (review) => review.user)
     reviews!: Review[];
 
     constructor(userAccount: UserAccount) {
         this.userAccount = userAccount;
-        this.userEventRoles = [];
-        this.attendedEvents = new Set<Event>();
-        this.organizedEvents = new Set<Event>();
-        this.friends = new Set<User>();
     }
 
     public getReviews(): Review[] {

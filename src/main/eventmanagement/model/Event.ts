@@ -44,7 +44,7 @@ export class Event {
     @Column()
     category: Category;
   
-    @ManyToOne(() => User, { cascade: true, eager: true })
+    @OneToMany(() => User, (user) => user.organizedEvents)
     @JoinColumn()
     organizer: User;
   
