@@ -8,7 +8,7 @@ import { Notification } from "./Notification";
 @Entity()
 export class Review {
     @PrimaryGeneratedColumn()
-    private id!: number;
+    id!: number;
 
     @ManyToOne(() => Event, (event) => event.reviews)
     event: Event;
