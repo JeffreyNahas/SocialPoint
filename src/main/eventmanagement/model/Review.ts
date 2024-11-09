@@ -1,9 +1,7 @@
-import { Entity, ManyToOne, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm";
+import { Entity, ManyToOne, PrimaryGeneratedColumn, Column, OneToMany, OneToOne } from "typeorm";
 import { User } from "./User";
 import { Event } from "./Event";
 import { Rating } from "./ReviewRating";
-import { Reply } from "./Reply";
-import { Notification } from "./Notification";
 
 @Entity()
 export class Review {
@@ -13,20 +11,21 @@ export class Review {
     @ManyToOne(() => Event, (event) => event.reviews)
     event: Event;
 
-    @ManyToOne(() => User, (user) => user.reviews)
+    @OneToOne(() => User)
     user: User;
 
     @Column()
     rating: Rating;
 
-    @Column({type: "timestamp"})
+    @Column()
     reviewDate: Date;
 
     @Column()
     comment: string;
 
-    @OneToMany(() => Reply, (reply) => reply.review)
-    replies!: Reply[];
+    @OneToMany(() => Review, (review) => review.replies)
+    replies: Review[] = [];
+
 
 
     constructor(event: Event, user: User, rating: Rating, comment: string) {
@@ -37,18 +36,16 @@ export class Review {
         this.comment = comment;
     }
 
-    public getReplies(): Reply[] {
-        return this.replies;
-    }
-
-
-    public addReply(reply: Reply): void {
+    public addReply(reply: Review): void {
         this.replies.push(reply);
-        this.event.addNotification(new Notification(`${reply.getUser().getUserAccount().getFullName()} replied to your review`, new Date(), this.event, "attendee"));
     }
 
-    public removeReply(reply: Reply): void {
-        this.replies = this.replies.filter(r => r !== reply);
+    public addReview(review: Review): void {
+        this.event.addReview(review);
+    }
+
+    public getReplies(): Review[] {
+        return this.replies;
     }
 
     

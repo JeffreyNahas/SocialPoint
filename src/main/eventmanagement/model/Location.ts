@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, OneToOne } from 'typeorm';
 import { Venue } from './Venue';
 
 @Entity()
@@ -28,7 +28,7 @@ export class Location {
   longitude?: number;
 
   @OneToMany(() => Venue, (venue) => venue.location)
-  venues!: Venue[];
+  venues!: Set<Venue>;
 
   constructor(address: string, city: string, state: string, postalCode: string, country?: string, latitude?: number, longitude?: number) {
     this.address = address;

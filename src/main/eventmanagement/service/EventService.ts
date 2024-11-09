@@ -25,9 +25,10 @@ export class EventService {
     startTime: Date,
     endTime: Date,
     category: Category,
-    organizer: User
+    organizer: User,
+    attendees: Set<User>
   ): Promise<Event> {
-    return await this.eventRepository.createEvent(name, description, venue, date, startTime, endTime, category, organizer);
+    return await this.eventRepository.createEvent(name, description, venue, date, startTime, endTime, category, organizer, attendees);
   }
 
   async updateEvent(id: number, updatedEventData: Partial<Event>): Promise<Event | null> {

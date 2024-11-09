@@ -3,7 +3,7 @@ import { Event } from "../model/Event";
 import { Venue } from "../model/Venue";
 import { Category } from "../model/Category";
 import { User } from "../model/User";
-
+import { Review } from "../model/Review";
 @EntityRepository(Event)
 export class EventRepository extends Repository<Event> {
     async findEventById(id: number): Promise<Event | null> {
@@ -17,9 +17,10 @@ export class EventRepository extends Repository<Event> {
         startTime: Date,
         endTime: Date,
         category: Category,
-        organizer: User
+        organizer: User,
+        listOfAttendees: Set<User>
       ): Promise<Event> {
-        const event = new Event(name, description, venue, date, startTime, endTime, category, organizer);
+        const event = new Event(name, description, venue, date, startTime, endTime, category, organizer, listOfAttendees, new Set<Review>());
         return await this.save(event);
       }
 

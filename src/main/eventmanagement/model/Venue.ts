@@ -1,4 +1,4 @@
-import { OneToMany, PrimaryGeneratedColumn, Column, Entity } from "typeorm";
+import { OneToMany, PrimaryGeneratedColumn, Column, Entity , OneToOne} from "typeorm";
 import { Event } from "./Event";
 import { Location } from "./Location";
 
@@ -10,14 +10,15 @@ export class Venue {
     @Column()
     name: string;
 
-    @Column()
-    location: Location;
+    @OneToOne(() => Location, (location) => location.venues)
+    location!: Location;
 
     @Column()
     capacity: number;
 
     @OneToMany(() => Event, (event) => event.venue)
-    events!: Event[];
+    eventsHosted!: Set<Event>;
+
 
     constructor(name: string, location: Location, capacity: number) {
         this.name = name;

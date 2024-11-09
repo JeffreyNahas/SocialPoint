@@ -7,6 +7,7 @@ import {
     ManyToMany,
     JoinColumn,
     JoinTable,
+    OneToOne,
 } from 'typeorm';
 import { User } from "./User";
 import { Venue } from "./Venue";
@@ -16,6 +17,7 @@ import { Review } from "./Review";
 
 // Handling Notifications triggered by the Event
 import { Notification } from "./Notification";
+import { Role } from './UserRole';
 
 @Entity()
 export class Event {
@@ -44,31 +46,23 @@ export class Event {
     @Column()
     category: Category;
   
-    @OneToMany(() => User, (user) => user.organizedEvents)
+    @OneToOne(() => User)
     @JoinColumn()
     organizer: User;
   
-    @ManyToMany(() => User, { cascade: true })
+    @OneToOne(() => User)
     @JoinTable()
-    attendees: Set<User>;
-  
-    @OneToMany(() => UserEventRole, (userEventRole) => userEventRole.event)
-    userEventRoles!: UserEventRole[];
-  
-    @OneToMany(() => Notification, (notification) => notification.event)
-    attendeeNotifications!: Notification[];
-  
-    @OneToMany(() => Notification, (notification) => notification.event)
-    organizerNotifications!: Notification[];
-
-    @OneToMany(() => Notification, (notification) => notification.event)
-    notifications!: Notification[];
+    listOfAttendees: Set<User>;
 
     @OneToMany(() => Review, (review) => review.event)
-    reviews!: Review[];
+    reviews: Review[] = [];
+
+    @OneToMany(() => Notification, (notification) => notification.event)
+    notifications: Notification[] = [];
+
 
     
-    constructor(name: string, description: string, venue: Venue, date: Date, startTime: Date, endTime: Date, category: Category, organizer: User) {
+    constructor(name: string, description: string, venue: Venue, date: Date, startTime: Date, endTime: Date, category: Category, organizer: User, listOfAttendees: Set<User>, listOfReviews: Set<Review>) {
         this.name = name;
         this.description = description;
         this.category = category;
@@ -77,7 +71,7 @@ export class Event {
         this.startTime = startTime;
         this.endTime = endTime;
         this.organizer = organizer;
-        this.attendees = new Set<User>();
+        this.listOfAttendees = listOfAttendees;
     }
 
     public getName(): string {
@@ -111,24 +105,8 @@ export class Event {
     public getOrganizer(): User {
         return this.organizer;
     }
-    public getAttendees(): Set<User> {
-        return this.attendees;
-    }
-
-    public getAttendeeNotifications(): Notification[] {
-        return this.attendeeNotifications;
-    }
-
-    public getOrganizerNotifications(): Notification[] {
-        return this.organizerNotifications;
-    }
-
-    public getNotifications(): Notification[] {
-        return this.notifications;
-    }
-
-    public getReviews(): Review[] {
-        return this.reviews;
+    public getListOfAttendees(): Set<User> {
+        return this.listOfAttendees;
     }
 
 
@@ -167,19 +145,6 @@ export class Event {
     public addReview(review: Review): void {
         this.reviews.push(review);
         this.addNotification(new Notification(`${review.getUser().getUserAccount().getFullName()} reviewed ${this.name}`, new Date(), this, "organizer"));
-    }
-
-
-    public addAttendeeNotification(notification: Notification): void {
-        if (notification.getNotificationType() === "attendee") {
-            this.attendeeNotifications.push(notification);
-        }
-    }
-
-    public addOrganizerNotification(notification: Notification): void {
-        if (notification.getNotificationType() === "organizer") {   
-            this.organizerNotifications.push(notification);
-        }
     }
 
     public addNotification(notification: Notification): void {
@@ -221,11 +186,13 @@ export class Event {
         this.addNotification(new Notification(`${this.name} Name updated to ${newName}`, new Date(), this, "organizer"));
     }
     public addAttendee(user: User): void {
-        this.attendees.add(user);
+        if (user.getUserEventRoleForEvent(this)?.getRole() == Role.Attendee) {
+            this.listOfAttendees.add(user);
+        }
     }
 
     public removeAttendee(user: User): void {
-        this.attendees.delete(user);
+        this.listOfAttendees.delete(user);
     }
 
     public removeReview(review: Review): void {
@@ -233,11 +200,11 @@ export class Event {
     }
 
     public hasAttendee(user: User): boolean {
-        return this.attendees.has(user);
+        return this.listOfAttendees.has(user);
     }
 
     public getAttendeesCount(): number {
-        return this.attendees.size;
+        return this.listOfAttendees.size;
     }
 
 }

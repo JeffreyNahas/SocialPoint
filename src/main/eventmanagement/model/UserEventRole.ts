@@ -3,7 +3,8 @@ import {
     PrimaryGeneratedColumn,
     ManyToOne,
     Column,
-    JoinColumn
+    JoinColumn,
+    OneToOne
   } from 'typeorm';
   import { User } from './User';
   import { Event } from './Event';
@@ -15,11 +16,9 @@ import {
     id!: number;
   
     @ManyToOne(() => User, (user) => user.userEventRoles)
-    @JoinColumn()
     user!: User;
   
-    @ManyToOne(() => Event, (event) => event.userEventRoles)
-    @JoinColumn()
+    @OneToOne(() => Event)
     event!: Event;
   
     @Column()
@@ -30,4 +29,35 @@ import {
         this.event = event;
         this.role = role;
     }
+
+    public getEvent(): Event {
+        return this.event;
+    }
+
+    public getUser(): User {
+        return this.user;
+    }
+
+    public getRole(): Role {
+        return this.role;
+    }
+
+    public setEvent(event: Event): void {
+        this.event = event;
+    }
+
+    public setUser(user: User): void {
+        this.user = user;
+    }
+
+    public setRoleForEvent(role: Role, event: Event): void {
+        this.role = role;
+        this.event = event;
+    }
+
+    public toString(): string {
+        return `UserEventRole(user=${this.user}, event=${this.event}, role=${this.role})`;
+    }
+
+
   }

@@ -37,7 +37,6 @@ export class UserAccount {
   private updatedAt!: Date;
 
   @OneToOne(() => User, (user) => user.userAccount)
-  @JoinColumn({ name: 'user_id', referencedColumnName: 'user_id' })
   user!: User;
 
   constructor(name: string, email: string, phoneNumber: string, password: string) {
