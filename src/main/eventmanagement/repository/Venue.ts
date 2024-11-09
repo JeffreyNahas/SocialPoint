@@ -30,6 +30,11 @@ export class VenueRepository extends Repository<Venue> {
         return await this.find();
     }
 
+    async findEventsByVenueId(id: number): Promise<Set<Event>> {
+      const venue = await this.findOne({ where: { id }, relations: ['events'] });
+      return new Set(venue?.eventsHosted || []);
+    }
+
     async findVenuesByFilters(filters: {
         name?: string;
         city?: string;
@@ -66,10 +71,5 @@ export class VenueRepository extends Repository<Venue> {
     
         return await queryBuilder.getMany();
       }
-
-      async findEventsByVenueId(id: number): Promise<Event[]> {
-        return await this.findOne({ where: { id }, relations: ['events'] }).then(venue => venue?.events || []);
-      }
-
 
 }

@@ -5,12 +5,14 @@ import { Event } from '../model/Event';
 import { Venue } from '../model/Venue';
 import { Category } from '../model/Category';
 import { User } from '../model/User';
-
+import { UserService } from './UserService';
 @Injectable()
 export class EventService {
+  
   constructor(
     @InjectRepository(EventRepository)
     private readonly eventRepository: EventRepository,
+    private readonly userService: UserService,
   ) {}
 
   async getEventById(id: number): Promise<Event | null> {
@@ -54,5 +56,32 @@ export class EventService {
     state?: string;
   }): Promise<Event[]> {
     return await this.eventRepository.findEventsByFilters(filters);
+  }
+
+  // Add an attendee to an event
+  public async addAttendeeToEvent(eventId: number, userId: number): Promise<Event> {
+    const event = await this.getEventById(eventId);
+    if (!event) {
+      throw new Error('Event not found');
+    }
+    const user = await this.userService.getUserById(userId);
+    if (!user) {
+      throw new Error('User not found');
+    }
+    event.addAttendee(user);
+    return await this.eventRepository.save(event);
+  }
+
+  public async removeAttendeeFromEvent(eventId: number, userId: number): Promise<Event> {
+    const event = await this.getEventById(eventId);
+    if (!event) {
+      throw new Error('Event not found');
+    }
+    const user = await this.userService.getUserById(userId);
+    if (!user) {
+      throw new Error('User not found'); 
+    }
+    event.removeAttendee(user);
+    return await this.eventRepository.save(event);
   }
 }

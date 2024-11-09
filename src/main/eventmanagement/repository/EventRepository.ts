@@ -4,7 +4,10 @@ import { Venue } from "../model/Venue";
 import { Category } from "../model/Category";
 import { User } from "../model/User";
 import { Review } from "../model/Review";
+
+
 @EntityRepository(Event)
+
 export class EventRepository extends Repository<Event> {
     async findEventById(id: number): Promise<Event | null> {
         return await this.findOne({ where: { id } });
