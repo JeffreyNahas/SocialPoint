@@ -2,28 +2,12 @@ import { EntityRepository, Repository } from "typeorm";
 import { Venue } from "../model/Venue";
 import { Location } from "../model/Location";
 import { Event } from "../model/Event";
+import { Injectable } from "@nestjs/common";
 
-@EntityRepository(Venue)
+@Injectable()
 export class VenueRepository extends Repository<Venue> {
     async findVenueById(id: number): Promise<Venue | null> {
         return await this.findOne({ where: { id } });
-    }
-
-    async createVenue(name: string, location: Location, capacity: number): Promise<Venue> {
-        const venue = new Venue(name, location, capacity);
-        return await this.save(venue);
-    }
-
-    async deleteVenue(id: number): Promise<boolean> {
-        const result = await this.delete(id);
-        return result.affected !== 0;
-    }
-
-    async updateVenue(id: number, updatedVenueData: Partial<Venue>): Promise<Venue | null> {
-        const venue = await this.findOneBy({ id });
-        if (!venue) return null;
-        Object.assign(venue, updatedVenueData);
-        return await this.save(venue);
     }
 
     async findAllVenues(): Promise<Venue[]> {

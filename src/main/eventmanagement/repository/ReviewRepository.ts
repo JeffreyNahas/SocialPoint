@@ -4,14 +4,13 @@ import { Review } from '../model/Review';
 import { User } from '../model/User';
 import { Event } from '../model/Event';
 import { Rating } from '../model/ReviewRating';
+import { Injectable } from '@nestjs/common';
+
+@Injectable()
 
 export class ReviewRepository extends Repository<Review> {
   
   // Create a new review
-  async createReview(event: Event, user: User, rating: Rating, comment: string): Promise<Review> {
-    const review = new Review(event, user, rating, comment);
-    return await this.save(review);
-  }
 
   // Find a review by ID
   async findReviewById(id: number): Promise<Review | null> {
@@ -26,21 +25,6 @@ export class ReviewRepository extends Repository<Review> {
     return await this.find({
       relations: ['user', 'event', 'replies'], // Load related entities
     });
-  }
-
-  // Update a review by ID
-  async updateReview(id: number, updatedData: Partial<Review>): Promise<Review | null> {
-    const review = await this.findOneBy({ id : id });
-    if (!review) return null;
-
-    Object.assign(review, updatedData);
-    return await this.save(review);
-  }
-
-  // Delete a review by ID
-  async deleteReview(id: number): Promise<boolean> {
-    const result = await this.delete(id);
-    return result.affected !== 0;
   }
 
   // Custom method: Find reviews for a specific event

@@ -4,45 +4,41 @@ import { Venue } from "../model/Venue";
 import { Category } from "../model/Category";
 import { User } from "../model/User";
 import { Review } from "../model/Review";
+import { Injectable } from "@nestjs/common";
 
 
-@EntityRepository(Event)
+@Injectable()
 
 export class EventRepository extends Repository<Event> {
     async findEventById(id: number): Promise<Event | null> {
         return await this.findOne({ where: { id } });
     }
-    async createEvent(
-        name: string,
-        description: string,
-        venue: Venue,
-        date: Date,
-        startTime: Date,
-        endTime: Date,
-        category: Category,
-        organizer: User,
-        listOfAttendees: Set<User>
-      ): Promise<Event> {
-        const event = new Event(name, description, venue, date, startTime, endTime, category, organizer, listOfAttendees, new Set<Review>());
-        return await this.save(event);
-      }
 
-    async deleteEvent(id: number): Promise<boolean> {
-        const result = await this.delete(id);
-        return result.affected !== 0;
-      }
-    async updateEvent(id: number, updatedEventData: Partial<Event>): Promise<Event | null> {
-        const event = await this.findOneBy({ id });
-        if (!event) return null;
-        Object.assign(event, updatedEventData);
-        return await this.save(event);
-      }
-
-      async findAllEvents(): Promise<Event[]> {
+    async findAllEvents(): Promise<Event[]> {
         return await this.find({ relations: ['venue', 'organizer', 'attendees', 'reviews', 'notifications'] });
-      }
+    }
 
-      async findEventsByFilters(filters: {
+    async findAttendeesByEvent(eventId: number): Promise<User[]> {
+        const event = await this.findOne({ 
+            where: { id: eventId },
+            relations: ['listOfAttendees']
+        });
+        return Array.from(event?.listOfAttendees || []);
+    }
+
+    async findOrganizerByEvent(eventId: number): Promise<User | null> {
+        const event = await this.findOne({ 
+            where: { id: eventId },
+            relations: ['organizer']
+        });
+        return event?.organizer || null;
+    }
+
+    async findEventsByVenue(venueId: number): Promise<Event[]> {
+        return await this.find({ where: { venue: { id: venueId } } });
+    }
+
+    async findEventsByFilters(filters: {
         date?: Date;
         venueId?: number;
         category?: Category;

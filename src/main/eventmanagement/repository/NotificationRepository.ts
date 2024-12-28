@@ -1,12 +1,10 @@
 import { Repository } from "typeorm";
 import {Notification} from "../model/Notification";
 import {Event} from "../model/Event"
+import { Injectable } from "@nestjs/common";
 
+@Injectable()
 export class NotificationsRepository extends Repository<Notification>{
-    async createNotification(message: string, timestamp: Date, event: Event, notificationType: string): Promise<Notification> {
-        const notification = new Notification(message, timestamp, event, notificationType);
-        return await this.save(notification);
-    }
 
     async findNotificationById(id: number): Promise<Notification | null> {
 
@@ -33,21 +31,6 @@ export class NotificationsRepository extends Repository<Notification>{
       .innerJoin('event.organizer', 'organizer')
       .where('organizer.id = :organizerId', { organizerId })
       .getMany();
-  }
-
-  // Update a notification by ID
-    async updateNotification(id: number, updatedData: Partial<Notification>): Promise<Notification | null> {
-    const notification = await this.findOneBy({ id });
-    if (!notification) return null;
-
-    Object.assign(notification, updatedData);
-    return await this.save(notification);
-  }
-
-  // Delete a notification by ID
-    async deleteNotification(id: number): Promise<boolean> {
-    const result = await this.delete(id);
-    return result.affected !== 0;
   }
 
   // Custom method: Find notifications by event

@@ -4,7 +4,6 @@ import { User } from './main/eventmanagement/model/User';
 import { Event } from './main/eventmanagement/model/Event';
 import { Venue } from './main/eventmanagement/model/Venue';
 import { Review } from './main/eventmanagement/model/Review'; 
-import { Reply } from './main/eventmanagement/model/Reply';
 import { Notification } from './main/eventmanagement/model/Notification';
 import { UserEventRole } from './main/eventmanagement/model/UserEventRole';
 

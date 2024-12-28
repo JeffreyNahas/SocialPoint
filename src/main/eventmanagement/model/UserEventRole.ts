@@ -24,10 +24,7 @@ import {
     @Column()
     role!: Role;  // Role can be a string (e.g., 'Organizer', 'Participant')
 
-    constructor(user: User, event: Event, role: Role) {
-        this.user = user;
-        this.event = event;
-        this.role = role;
+    constructor() {
     }
 
     public getEvent(): Event {

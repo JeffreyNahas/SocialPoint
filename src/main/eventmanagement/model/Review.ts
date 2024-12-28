@@ -9,10 +9,10 @@ export class Review {
     id!: number;
 
     @ManyToOne(() => Event, (event) => event.reviews)
-    event: Event;
+    event!: Event;
 
     @OneToOne(() => User)
-    user: User;
+    user!: User;
 
     @Column()
     rating: Rating;
@@ -28,9 +28,7 @@ export class Review {
 
 
 
-    constructor(event: Event, user: User, rating: Rating, comment: string) {
-        this.event = event;
-        this.user = user;
+    constructor(rating: Rating, comment: string) {
         this.rating = rating;
         this.reviewDate = new Date();
         this.comment = comment;
@@ -40,8 +38,8 @@ export class Review {
         this.replies.push(reply);
     }
 
-    public addReview(review: Review): void {
-        this.event.addReview(review);
+    public deleteReply(replyId: number): void {
+        this.replies = this.replies.filter(reply => reply.id !== replyId);
     }
 
     public getReplies(): Review[] {
@@ -49,11 +47,11 @@ export class Review {
     }
 
     
-    public getEvent(): Event {
+    public getEvent(): Event | null {
         return this.event;
     }
 
-    public getUser(): User {
+    public getUser(): User | null {
         return this.user;
     }
 
@@ -79,6 +77,14 @@ export class Review {
 
     public setEvent(event: Event): void {
         this.event = event;
+    }
+
+    public setReviewDate(reviewDate: Date): void {
+        this.reviewDate = reviewDate;
+    }
+
+    public setReplies(replies: Review[]): void {
+        this.replies = replies;
     }
 
     public setUser(user: User): void {

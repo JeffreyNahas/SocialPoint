@@ -4,14 +4,10 @@ import { UserEventRole } from '../model/UserEventRole';
 import { User } from '../model/User';
 import { Event } from '../model/Event';
 import { Role } from '../model/UserRole';
+import { Injectable } from "@nestjs/common";
 
+@Injectable()
 export class UserEventRoleRepository extends Repository<UserEventRole> {
-  
-  // Create a new UserEventRole
-  async createUserEventRole(user: User, event: Event, role: Role): Promise<UserEventRole> {
-    const userEventRole = new UserEventRole(user, event, role);
-    return await this.save(userEventRole);
-  }
 
   // Find a UserEventRole by ID
   async findUserEventRoleById(id: number): Promise<UserEventRole | null> {
@@ -26,21 +22,6 @@ export class UserEventRoleRepository extends Repository<UserEventRole> {
     return await this.find({
       relations: ['user', 'event'], // Load related user and event for each UserEventRole
     });
-  }
-
-  // Update a UserEventRole by ID
-  async updateUserEventRole(id: number, updatedData: Partial<UserEventRole>): Promise<UserEventRole | null> {
-    const userEventRole = await this.findOneBy({ id });
-    if (!userEventRole) return null;
-
-    Object.assign(userEventRole, updatedData);
-    return await this.save(userEventRole);
-  }
-
-  // Delete a UserEventRole by ID
-  async deleteUserEventRole(id: number): Promise<boolean> {
-    const result = await this.delete(id);
-    return result.affected !== 0;
   }
 
   // Custom method: Find all roles for a specific user

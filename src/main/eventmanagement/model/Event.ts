@@ -7,6 +7,7 @@ import {
     JoinColumn,
     JoinTable,
     OneToOne,
+    ManyToMany,
 } from 'typeorm';
 import { User } from "./User";
 import { Venue } from "./Venue";
@@ -49,9 +50,9 @@ export class Event {
     @JoinColumn()
     organizer: User;
   
-    @OneToOne(() => User)
+    @ManyToMany(() => User)
     @JoinTable()
-    listOfAttendees: Set<User>;
+    listOfAttendees: Set<User> = new Set<User>();
 
     @OneToMany(() => Review, (review) => review.event)
     reviews: Review[] = [];
@@ -61,7 +62,7 @@ export class Event {
 
 
     
-    constructor(name: string, description: string, venue: Venue, date: Date, startTime: Date, endTime: Date, category: Category, organizer: User, listOfAttendees: Set<User>, listOfReviews: Set<Review>) {
+    constructor(name: string, description: string, venue: Venue, date: Date, startTime: Date, endTime: Date, category: Category, organizer: User) {
         this.name = name;
         this.description = description;
         this.category = category;
@@ -70,7 +71,6 @@ export class Event {
         this.startTime = startTime;
         this.endTime = endTime;
         this.organizer = organizer;
-        this.listOfAttendees = listOfAttendees;
     }
 
     public getName(): string {
@@ -143,7 +143,10 @@ export class Event {
 
     public addReview(review: Review): void {
         this.reviews.push(review);
-        this.addNotification(new Notification(`${review.getUser().getUserAccount().getFullName()} reviewed ${this.name}`, new Date(), this, "organizer"));
+        const user = review.getUser();
+        if (user?.getUserAccount()) {
+            this.addNotification(new Notification(`${user.getUserAccount().getFullName()} reviewed ${this.name}`, new Date(), this, "organizer"));
+        }
     }
 
     public addNotification(notification: Notification): void {
@@ -194,8 +197,8 @@ export class Event {
         this.listOfAttendees.delete(user);
     }
 
-    public removeReview(review: Review): void {
-        this.reviews = this.reviews.filter(r => r !== review);
+    public removeReview(reviewId: number): void {
+        this.reviews = this.reviews.filter(review => review.id !== reviewId);
     }
 
     public hasAttendee(user: User): boolean {
