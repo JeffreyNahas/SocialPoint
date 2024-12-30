@@ -2,6 +2,7 @@ import { AppDataSource } from "../../../data-source"; // Replace with your data 
 import { Repository } from 'typeorm';
 import { UserAccount } from '../model/UserAccount';
 import { Injectable } from "@nestjs/common";
+import { User } from "../model/User";
 
 @Injectable()
 export class UserAccountRepository extends Repository<UserAccount> {

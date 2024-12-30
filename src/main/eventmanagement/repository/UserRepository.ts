@@ -9,6 +9,13 @@ import { Injectable } from "@nestjs/common";
 export class UserRepository extends Repository<User> {
 
 
+    async findUserByUserAccountId(userAccountId: number): Promise<User | null> {
+        return await this.findOne({
+            where: { userAccount: { id: userAccountId } },
+            relations: ['userAccount', 'userEventRoles', 'attendedEvents', 'organizedEvents', 'friends', 'reviews']
+        });
+    }
+
     async findUserById(id: number): Promise<User | null> {
         return await this.findOne({
           where: { userAccount: { id: id } },

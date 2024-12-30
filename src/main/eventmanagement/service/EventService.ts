@@ -136,4 +136,8 @@ export class EventService {
     return await this.eventRepository.save(event);
   }
 
+  async getEventById(id: number): Promise<Event | null> {
+    return await this.eventRepository.findEventById(id);
+  }
+
 }

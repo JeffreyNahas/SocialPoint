@@ -1,4 +1,4 @@
-import { EntityRepository, Repository } from "typeorm";
+import { Repository } from "typeorm";
 import { Venue } from "../model/Venue";
 import { Location } from "../model/Location";
 import { Event } from "../model/Event";

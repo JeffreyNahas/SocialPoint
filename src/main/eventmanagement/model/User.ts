@@ -22,7 +22,7 @@ export class User {
     id!: number;
 
     @OneToOne(() => UserAccount, { cascade: true, eager: true })
-    userAccount: UserAccount;
+    userAccount!: UserAccount;
 
     @OneToMany(() => UserEventRole, (userEventRole) => userEventRole.user)
     userEventRoles!: Set<UserEventRole>;
@@ -30,8 +30,7 @@ export class User {
     @OneToMany(() => User, (user) => user.friends)
     friends!: Set<User>;
 
-    constructor(userAccount: UserAccount) {
-        this.userAccount = userAccount;
+    constructor() {
     }
 
     public getUserAccount(): UserAccount {
