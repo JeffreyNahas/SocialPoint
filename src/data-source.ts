@@ -18,5 +18,5 @@ export const AppDataSource = new DataSource({
   database: 'event_management',
   synchronize: true, // Set to false in production
   logging: true,
-  entities: [User, UserAccount, Event, Venue, Review, Reply, Notification, UserEventRole], // Add all your models here
+  entities: [User, UserAccount, Event, Venue, Review, Notification, UserEventRole], // Add all your models here
 });

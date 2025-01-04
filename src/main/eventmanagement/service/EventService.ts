@@ -10,6 +10,8 @@ import { Review } from '../model/Review';
 import { Notification } from '../model/Notification';
 import { ReviewService } from './ReviewService';
 import { ReviewRepository } from '../repository/ReviewRepository';
+import { Location } from '../model/Location';
+
 @Injectable()
 export class EventService {
   

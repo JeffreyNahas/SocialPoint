@@ -5,6 +5,7 @@ import { Category } from "../model/Category";
 import { User } from "../model/User";
 import { Review } from "../model/Review";
 import { Injectable } from "@nestjs/common";
+import { Location } from '../model/Location';
 
 
 @Injectable()

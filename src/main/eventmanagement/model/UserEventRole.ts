@@ -22,7 +22,7 @@ import {
     event!: Event;
   
     @Column()
-    role!: Role;  // Role can be a string (e.g., 'Organizer', 'Participant')
+    role!: Role;
 
     constructor() {
     }
@@ -50,6 +50,10 @@ import {
     public setRoleForEvent(role: Role, event: Event): void {
         this.role = role;
         this.event = event;
+    }
+
+    public setRole(role: Role): void {
+        this.role = role;
     }
 
     public toString(): string {
