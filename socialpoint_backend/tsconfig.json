@@ -13,6 +13,8 @@
     "resolveJsonModule": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true
+    
+  
   },
   "include": ["socialpoint_backend/src/**/*"],  // Includes all files in src
   "exclude": ["node_modules", "dist"]

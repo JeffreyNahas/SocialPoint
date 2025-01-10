@@ -1,8 +1,9 @@
 import 'dotenv/config'; // Load environment variables from .env file
-import express, { Request, Response } from 'express';
+import * as express from 'express';
+import { Request, Response } from 'express';
 import { AppDataSource } from './data-source'; // Import your TypeORM data source
-import bodyParser from 'body-parser';
-import cors from 'cors';
+import * as bodyParser from 'body-parser';
+import * as cors from 'cors';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
