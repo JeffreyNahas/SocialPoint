@@ -1,16 +1,16 @@
 .header {
-  background-color: #ff2f2f; /* Red banner */
+  background-color: #ff2f2f;
   color: white;
   padding: 20px 20px;
-  position: fixed; /* Sticks the header to the top */
+  position: fixed; 
   top: 0;
   left: 0;
   right: 0;
-  z-index: 1000; /* Ensures it stays on top of other elements */
+  z-index: 1000; 
 }
 
 .header-content {
-  max-width: 1200px; /* Optional: centers content */
+  max-width: 1200px; 
   margin: 0 auto;
   display: flex;
   justify-content: space-between;
@@ -40,24 +40,24 @@
 }
 
 .nav-button:hover {
-  background-color: #cc0000; /* Darker red on hover */
+  background-color: #cc0000; 
   color: white;
 }
 .logo-title {
   display: flex;
   align-items: center;
-  gap: 10px; /* Space between the logo and title */
+  gap: 10px; 
 }
 
 .logo {
-  height: 60px; /* Increase the circle size */
-  width: 60px;  /* Ensure the circle is large enough */
-  border-radius: 50%; /* Keeps the circular shape */
-  background-color: white; /* White circle background */
-  padding: 3px; /* Adds spacing between the logo image and the circle edge */
-  box-sizing: border-box; /* Includes padding in total size */
-  object-fit: contain; /* Ensures the non-round logo fits inside the circle */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Optional: Adds a shadow */
+  height: 60px; 
+  width: 60px;  
+  border-radius: 50%; 
+  background-color: white; 
+  padding: 3px; 
+  box-sizing: border-box;
+  object-fit: contain; 
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
 }
 
 
