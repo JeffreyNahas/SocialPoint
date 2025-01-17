@@ -1,0 +1,68 @@
+.header {
+  background-color: #ff2f2f; /* Red banner */
+  color: white;
+  padding: 20px 20px;
+  position: fixed; /* Sticks the header to the top */
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000; /* Ensures it stays on top of other elements */
+}
+
+.header-content {
+  max-width: 1200px; /* Optional: centers content */
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  overflow: visible;
+}
+
+.header-title {
+  font-size: 24px;
+  margin: 0;
+}
+
+.nav-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.nav-button {
+  background-color: white;
+  color: #ff0000;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.nav-button:hover {
+  background-color: #cc0000; /* Darker red on hover */
+  color: white;
+}
+.logo-title {
+  display: flex;
+  align-items: center;
+  gap: 10px; /* Space between the logo and title */
+}
+
+.logo {
+  height: 60px; /* Increase the circle size */
+  width: 60px;  /* Ensure the circle is large enough */
+  border-radius: 50%; /* Keeps the circular shape */
+  background-color: white; /* White circle background */
+  padding: 3px; /* Adds spacing between the logo image and the circle edge */
+  box-sizing: border-box; /* Includes padding in total size */
+  object-fit: contain; /* Ensures the non-round logo fits inside the circle */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Optional: Adds a shadow */
+}
+
+
+.header-title {
+  font-size: 24px;
+  margin: 0;
+  color: white;
+}

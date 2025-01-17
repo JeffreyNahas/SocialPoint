@@ -1,0 +1,184 @@
+html {
+    scroll-behavior: smooth;
+  }
+  body {
+    perspective: 1000px;
+    overflow-x: hidden;
+  }
+  
+  .welcome-page, .stacked-section {
+    transform-style: preserve-3d;
+  }
+  .welcome-page {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh; /* Full viewport height */
+    width: 100%;
+    padding: 20px;
+    z-index: 1; /* Base layer */
+    background-attachment: fixed; /* Parallax effect */
+    clip-path: inset(0 0 0 0); /* Prevent background from overflowing */
+  }
+  .spacer {
+    height: 20px; /* Adds spacing */
+    background-color: white; /* Matches the stacked section background */
+  }
+  
+  
+  /* Background Overlay for Welcome Page */
+  .welcome-page::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('/background.jpg'); /* Path to your background image */
+    background-size: cover;
+    background-position: center;
+    z-index: -1; /* Behind all content */
+    filter: blur(1px);
+    clip-path: inset(0 0 0 0); /* Prevent background from bleeding */
+    transform: translateZ(-1px) scale(1.1); /* Parallax depth */
+  }
+  
+  .welcome-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%; /* Match height of welcome-page */
+    background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent white overlay */
+    z-index: -1; /* Ensures it is behind the content but above the blurred background */
+  }
+
+  .welcome-text {
+    flex: 1;
+    margin-right: 20px;
+    padding-left: 70px; /* Add padding to move the text inward */
+    text-align: left; /* Ensure the text stays aligned to the left */
+  }
+  
+  .welcome-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto; /* Center the content in the page */
+  }
+
+  
+  .welcome-text h1 {
+    font-size: 36px;
+    color: #333;
+    margin-bottom: 20px;
+  }
+  
+  .welcome-text p {
+    font-size: 18px;
+    color: #555;
+    margin-bottom: 30px;
+  }
+  
+  .signup-button {
+    background-color: #ff2f2f;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .signup-button:hover {
+    background-color: #cc0000;
+  }
+  
+  .welcome-image {
+    flex: 1;
+    text-align: center;
+  }
+  .welcome-image {
+    flex: 1;
+    text-align: center;
+    display: flex; /* Ensures proper alignment */
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .welcome-image img {
+    width: 450px; /* Increase width */
+    height: auto; /* Maintain aspect ratio */
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Optional */
+  }
+
+  .stacked-section {
+    position: relative;
+    background-color: white; /* Solid white background */
+    padding: 50px 20px;
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    z-index: 3; /* Stacked above the welcome section */
+    margin-top: 0; /* Ensure no overlap */
+    border-top: 5px solid #ffffff; /* Clean separation */
+    transition: transform 0.4s ease-in-out, box-shadow 0.4s ease-in-out; /* Smooth transition */
+  }
+  
+  .stacked-section:hover {
+    transform: translateY(-20px) scale(1.05); /* Lift and grow smoothly */
+    box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.2); /* Enhanced shadow for depth */
+  }
+  .stacked-content {
+    display: flex;
+    flex-direction: row; /* Align text and image side by side */
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    width: 100%;
+    gap: 20px;
+    z-index: 2;
+  }
+  
+  .stacked-text {
+    flex: 1;
+    text-align: left; /* Align text to the left */
+    padding: 20px;
+  }
+  
+  .stacked-text h2 {
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 15px;
+  }
+  
+  .stacked-text p {
+    font-size: 16px;
+    color: #555;
+  }
+  
+  .stacked-image {
+    flex: 1;
+    text-align: center;
+  }
+  
+  .stacked-image img {
+    max-width: 100%; /* Ensure the image scales properly */
+    height: auto; /* Maintain the aspect ratio */
+    border-radius: 50px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Optional shadow */
+  }
+    
+.stacked-section:nth-child(even) .stacked-content {
+    flex-direction: row-reverse; /* Flip the text and image positions */
+  }
+
+/* Add a Clear Divider Between Sections */
+
+
+.stacked-section:not(:last-child) {
+    border-bottom: 5px solid #f8f8f8; /* Light gray divider */
+  }
