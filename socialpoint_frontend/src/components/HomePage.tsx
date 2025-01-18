@@ -1,6 +1,6 @@
 import React from 'react';
-import Header from './Header'; // Import your Header component
-import WelcomePage from './WelcomePage'; // Import your WelcomePage component
+import Header from './Header'; 
+import WelcomePage from './WelcomePage'; 
 
 const HomePage: React.FC = () => {
   return (
