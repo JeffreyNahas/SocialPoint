@@ -1,7 +1,9 @@
 import React from 'react';
 import './WelcomePage.css';
+import { useNavigate } from 'react-router-dom';
 
 const WelcomePage: React.FC = () => {
+  const navigate = useNavigate();
   return (
     <>
       <div className="welcome-page">
@@ -13,7 +15,7 @@ const WelcomePage: React.FC = () => {
               Social Point is the ultimate platform to connect with people, create events, and share
               unforgettable moments. Sign up today and be part of our growing community!
             </p>
-            <button className="signup-button">Sign Up</button>
+            <button className="signup-button" onClick={() => navigate('/signup')}>Sign Up</button>
           </div>
           <div className="welcome-image">
             <img src="/welcome-image.jpg" alt="Welcome" />
@@ -21,7 +23,7 @@ const WelcomePage: React.FC = () => {
         </div>
       </div>
       <div className="spacer"></div> 
-      
+        
       <div className="stacked-section">
         <div className="stacked-content">
           <div className="stacked-text">

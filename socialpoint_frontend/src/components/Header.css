@@ -1,22 +1,22 @@
 .header {
-  background-color: #ff2f2f;
+  background-color: #ff2f2f; /* Red banner */
   color: white;
-  padding: 20px 20px;
-  position: fixed; 
+  padding: 15px 20px;
+  position: fixed; /* Sticks the header to the top */
   top: 0;
   left: 0;
   right: 0;
-  z-index: 1000; 
+  z-index: 1000; /* Ensures it stays on top of other elements */
 }
 
 .header-content {
-  max-width: 1200px; 
+  max-width: 1200px; /* Optional: centers content */
   margin: 0 auto;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  overflow: visible;
 }
+
 
 .header-title {
   font-size: 24px;

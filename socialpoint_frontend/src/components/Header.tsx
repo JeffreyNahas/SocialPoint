@@ -1,19 +1,28 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import './Header.css';
 
-const Header: React.FC = () => {
+interface HeaderProps {
+  hideButtons?: boolean;
+}
+
+const Header: React.FC<HeaderProps> = ({ hideButtons = false }) => {
+  const navigate = useNavigate();
+
   return (
     <header className="header">
       <div className="header-content">
         <div className="logo-title">
-          <img src="/logo.png" className="logo" />
+          <img src="/logo.png" className="logo" alt="Logo" />
           <h1 className="header-title">Social Point</h1>
         </div>
-        <nav className="nav-buttons">
-          <button className="nav-button">Home</button>
-          <button className="nav-button">My Events</button>
-          <button className="nav-button">Profile</button>
-        </nav>
+        {!hideButtons && (
+          <nav className="nav-buttons">
+            <button className="nav-button">Home</button>
+            <button className="nav-button">My Events</button>
+            <button className="nav-button" onClick={() => navigate('/login')}>Log in</button>
+          </nav>
+        )}
       </div>
     </header>
   );
