@@ -1,13 +1,18 @@
 import React from 'react';
-import Header from './components/Header';
-import WelcomePage from './components/WelcomePage';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import HomePage from './components/HomePage'; // Import the new HomePage component
+import LoginPage from './components/LoginPage'; // Import the LoginPage component
+import SignUpPage from './components/SignUpPage';
 
 const App: React.FC = () => {
   return (
-    <div className="App">
-      <Header />
-      <WelcomePage />
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/home" element={<HomePage />} /> {/* Home page route */}
+        <Route path="/login" element={<LoginPage />} /> {/* Login page route */}
+        <Route path="/signup" element={<SignUpPage />} /> {/* Sign up page route */}
+      </Routes>
+    </Router>
   );
 };
 
