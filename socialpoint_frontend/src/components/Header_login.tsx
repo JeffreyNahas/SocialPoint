@@ -12,7 +12,7 @@ const Header_login: React.FC = () => {
           <h1 className="header-title">Social Point</h1>
         </div>
         <nav className="nav-buttons">
-            <button className="nav-button" onClick={() => navigate('/home')}>Home</button>
+            <button className="nav-button" onClick={() => navigate('/')}>Home</button>
           </nav>
       </div>
     </header>
