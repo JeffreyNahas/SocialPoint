@@ -58,8 +58,8 @@ const SignUpPage: React.FC = () => {
     }
 
     try {
-      // First create the user account
-      const userAccountResponse = await fetch('http://localhost:3000/api/user-accounts', {
+      // Single API call to create both user and user account
+      const response = await fetch('http://localhost:3000/api/users', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -73,28 +73,9 @@ const SignUpPage: React.FC = () => {
         }),
       });
 
-      if (!userAccountResponse.ok) {
-        const error = await userAccountResponse.json();
-        throw new Error(error.message || 'Failed to create user account');
-      }
-
-      const userAccount = await userAccountResponse.json();
-
-      // Then create the user with the user account
-      const userResponse = await fetch('http://localhost:3000/api/users', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify({
-          userAccount: userAccount
-        }),
-      });
-
-      if (!userResponse.ok) {
-        const error = await userResponse.json();
-        throw new Error(error.message || 'Failed to create user');
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to create account');
       }
 
       // Redirect to login page on success

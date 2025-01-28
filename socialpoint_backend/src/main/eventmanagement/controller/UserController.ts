@@ -9,28 +9,37 @@ import { UserEventRole } from '../model/UserEventRole';
 import { User } from '../model/User';
 import { UserAccountService } from '../service/UserAccountService';
 import { UserAccount } from '../model/UserAccount';
+import { UserRepository } from '../repository/UserRepository';
 
 @Controller('api/users')
 export class UserController {
    constructor(
        private readonly userService: UserService,
-       private readonly userAccountService: UserAccountService
+       private readonly userAccountService: UserAccountService,
+       private readonly userRepository: UserRepository
    ) {}
 
    @Post()
    async createUser(@Body() createDto: CreateUserRequestDto): Promise<UserResponseDto> {
        try {
-           // First create the user account
+           // Create user account first
            const userAccount = await this.userAccountService.createUserAccount(
                createDto.fullName,
                createDto.email,
                createDto.phoneNumber || '',
                createDto.password
            );
-           
-           // Then create the user with the user account
-           const user = await this.userService.createUser(userAccount);
-           return this.mapToResponseDto(user);
+
+           // Create user and link it to the user account
+           const user = new User();
+           user.setUserAccount(userAccount);
+           const savedUser = await this.userRepository.save(user);
+
+           // Link user back to user account
+           userAccount.user = savedUser;
+           await this.userAccountService.updateUserAccount(userAccount.id, userAccount);
+
+           return this.mapToResponseDto(savedUser);
        } catch (error) {
            throw new HttpException(
                error instanceof Error ? error.message : 'Failed to create user', 
