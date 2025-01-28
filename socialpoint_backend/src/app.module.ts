@@ -29,9 +29,6 @@ import { EventRepository } from './main/eventmanagement/repository/EventReposito
             Review, 
             Notification, 
             UserEventRole,
-            UserRepository,     // Add repositories here
-            EventRepository,    // Add EventRepository
-            UserAccountRepository
         ])
     ],
     controllers: [

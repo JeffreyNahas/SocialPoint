@@ -31,6 +31,8 @@ export class User {
     friends!: Set<User>;
 
     constructor() {
+        this.userEventRoles = new Set<UserEventRole>();
+        this.friends = new Set<User>();
     }
 
     public getUserAccount(): UserAccount {
