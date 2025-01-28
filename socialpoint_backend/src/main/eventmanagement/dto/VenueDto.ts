@@ -1,5 +1,4 @@
 import { IsString, IsNumber, IsNotEmpty, IsOptional } from 'class-validator';
-import { Location } from '../model/Location';
 
 // dto/request/create-venue.request.dto.ts
 export class CreateVenueRequestDto {
@@ -8,7 +7,7 @@ export class CreateVenueRequestDto {
   name!: string;
 
   @IsNotEmpty()
-  location!: Location;
+  location!: string;
 
   @IsNumber()
   @IsNotEmpty()
@@ -22,7 +21,7 @@ export class UpdateVenueRequestDto {
   name?: string;
 
   @IsOptional()
-  location?: Location;
+  location?: string;
 
   @IsNumber()
   @IsOptional()

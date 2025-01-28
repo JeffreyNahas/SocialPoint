@@ -25,40 +25,40 @@ export class Event {
     id!: number;
   
     @Column()
-    name: string;
+    name!: string;
   
     @Column({ type: 'text' })
-    description: string;
+    description!: string;
   
     @ManyToOne(() => Venue, { cascade: true, eager: true })
     @JoinColumn()
-    venue: Venue;
+    venue!: Venue;
   
     @Column({ type: 'date' })
-    date: Date;
+    date!: Date;
   
     @Column({ type: 'time' })
-    startTime: Date;
+    startTime!: Date;
   
     @Column({ type: 'time' })
-    endTime: Date;
+    endTime!: Date;
   
     @Column()
-    category: Category;
+    category!: Category;
   
     @OneToOne(() => User)
     @JoinColumn()
-    organizer: User;
+    organizer!: User;
   
     @ManyToMany(() => User)
     @JoinTable()
-    listOfAttendees: Set<User> = new Set<User>();
+    listOfAttendees!: Set<User>;
 
-    @OneToMany(() => Review, (review) => review.event)
-    reviews: Review[] = [];
+    @OneToMany(() => Review, review => review.event)
+    reviews!: Review[];
 
-    @OneToMany(() => Notification, (notification) => notification.event)
-    notifications: Notification[] = [];
+    @OneToMany(() => Notification, notification => notification.event)
+    notifications!: Set<Notification>;
 
 
     
@@ -142,6 +142,9 @@ export class Event {
     }
 
     public addReview(review: Review): void {
+        if (!this.reviews) {
+            this.reviews = [];
+        }
         this.reviews.push(review);
         const user = review.getUser();
         if (user?.getUserAccount()) {
@@ -150,7 +153,10 @@ export class Event {
     }
 
     public addNotification(notification: Notification): void {
-        this.notifications.push(notification);
+        if (!this.notifications) {
+            this.notifications = new Set<Notification>();
+        }
+        this.notifications.add(notification);
     }
 
     public updateDate(newDate: Date): void {
@@ -188,6 +194,9 @@ export class Event {
         this.addNotification(new Notification(`${this.name} Name updated to ${newName}`, new Date(), this, "organizer"));
     }
     public addAttendee(user: User): void {
+        if (!this.listOfAttendees) {
+            this.listOfAttendees = new Set<User>();
+        }
         if (user.getUserEventRoleForEvent(this)?.getRole() == Role.Attendee) {
             this.listOfAttendees.add(user);
         }

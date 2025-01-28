@@ -1,6 +1,5 @@
-import { OneToMany, PrimaryGeneratedColumn, Column, Entity , OneToOne} from "typeorm";
-import { Event } from "./Event";
-import { Location } from "./Location";
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, OneToOne, JoinColumn } from 'typeorm';
+import { Event } from './Event';
 
 @Entity()
 export class Venue {
@@ -8,19 +7,18 @@ export class Venue {
     id!: number;
 
     @Column()
-    name: string;
-
-    @OneToOne(() => Location, (location) => location.venues)
-    location!: Location;
+    name!: string;
 
     @Column()
-    capacity: number;
+    capacity!: number;
 
-    @OneToMany(() => Event, (event) => event.venue)
-    eventsHosted!: Set<Event>;
+    @Column()
+    location!: string;
 
+    @OneToMany(() => Event, event => event.venue)
+    events!: Set<Event>;
 
-    constructor(name: string, location: Location, capacity: number) {
+    constructor(name: string, location: string, capacity: number) {
         this.name = name;
         this.location = location;
         this.capacity = capacity;
@@ -30,7 +28,7 @@ export class Venue {
         return this.name;
     }
 
-    public getLocation(): Location {
+    public getLocation(): string {
         return this.location;
     }
 
@@ -42,7 +40,7 @@ export class Venue {
         this.capacity = capacity;
     }
 
-    public setLocation(location: Location): void {
+    public setLocation(location: string): void {
         this.location = location;
     }
 
@@ -54,7 +52,7 @@ export class Venue {
         this.capacity = newCapacity;
     }
 
-    public updateLocation(newLocation: Location): void {
+    public updateLocation(newLocation: string): void {
         this.location = newLocation;
     }
 

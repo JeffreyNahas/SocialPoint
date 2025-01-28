@@ -10,7 +10,6 @@ import { Review } from '../model/Review';
 import { Notification } from '../model/Notification';
 import { ReviewService } from './ReviewService';
 import { ReviewRepository } from '../repository/ReviewRepository';
-import { Location } from '../model/Location';
 
 @Injectable()
 export class EventService {
@@ -69,7 +68,7 @@ export class EventService {
     venueId?: number;
     category?: Category;
     organizerId?: number;
-    location?: Location;
+    location?: string;
     country?: string;
     city?: string;
     state?: string;

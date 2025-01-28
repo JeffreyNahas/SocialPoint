@@ -3,7 +3,7 @@
     "target": "es2016",
     "module": "commonjs",
     "outDir": "./dist",
-    "rootDir": "socialpoint_backend/src",
+    "rootDir": "./src",
     "sourceMap": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
@@ -13,9 +13,7 @@
     "resolveJsonModule": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true
-    
-  
   },
-  "include": ["socialpoint_backend/src/**/*"],  // Includes all files in src
+  "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]
 }

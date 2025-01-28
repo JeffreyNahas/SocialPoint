@@ -16,19 +16,19 @@ export class UserAccount {
   id!: number;
 
   @Column()
-  fullName: string;
+  fullName!: string;
 
   @Column({ unique: true })
-  email: string;
+  email!: string;
 
   @Column()
-  phoneNumber: string;
+  phoneNumber!: string;
 
   @Column()
-  private password: string;
+  password!: string;
 
   @Column({ nullable: true })
-  private sessionToken?: string;  // Column to store session token
+  sessionToken?: string;
 
   @CreateDateColumn()
   private createdAt!: Date;
@@ -36,7 +36,8 @@ export class UserAccount {
   @UpdateDateColumn()
   private updatedAt!: Date;
 
-  @OneToOne(() => User, (user) => user.userAccount)
+  @OneToOne(() => User, user => user.userAccount)
+  @JoinColumn()
   user!: User;
 
   constructor(name: string, email: string, phoneNumber: string, password: string) {

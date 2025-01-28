@@ -34,7 +34,9 @@ export class VenueService {
     }
 
     async getEventsByVenueId(id: number): Promise<Set<Event>> {
-        return await this.venueRepository.findEventsByVenueId(id);
+        const venue = await this.getVenueById(id);
+        if (!venue) return new Set();
+        return await this.venueRepository.findEventsByVenue(venue);
     }
 
     async getAllVenues(): Promise<Venue[]> {

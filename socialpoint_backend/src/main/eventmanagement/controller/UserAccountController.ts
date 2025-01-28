@@ -4,23 +4,31 @@ import { CreateUserAccountRequestDto } from '../dto/UserAccountDto';
 import { LoginUserAccountRequestDto } from '../dto/UserAccountDto';
 import { UserAccountResponseDto } from '../dto/UserAccountDto';
 import { UserAccount } from '../model/UserAccount';
+import { CreateUserRequestDto } from '../dto/UserDto';
 
-@Controller('user-accounts')
+@Controller('api/user-accounts')
 export class UserAccountController {
    constructor(private readonly userAccountService: UserAccountService) {}
 
    @Post()
-   async createUserAccount(@Body() createDto: CreateUserAccountRequestDto): Promise<UserAccountResponseDto> {
+   async createUserAccount(@Body() createDto: CreateUserRequestDto) {
        try {
            const userAccount = await this.userAccountService.createUserAccount(
                createDto.fullName,
                createDto.email,
-               createDto.phoneNumber,
+               createDto.phoneNumber || '',
                createDto.password
            );
-           return this.mapToResponseDto(userAccount);
-       } catch (error) {
-           throw new HttpException('Failed to create user account', HttpStatus.BAD_REQUEST);
+           return userAccount;
+       } catch (error: unknown) {
+           console.error('Error creating user account:', error);
+           if (error instanceof Error) {
+               if (error.message.includes('duplicate')) {
+                   throw new HttpException('Email already exists', HttpStatus.CONFLICT);
+               }
+               throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+           }
+           throw new HttpException('Failed to create user account', HttpStatus.INTERNAL_SERVER_ERROR);
        }
    }
 

@@ -21,13 +21,13 @@ export class User {
     @PrimaryGeneratedColumn()
     id!: number;
 
-    @OneToOne(() => UserAccount, { cascade: true, eager: true })
+    @OneToOne(() => UserAccount, userAccount => userAccount.user)
     userAccount!: UserAccount;
 
-    @OneToMany(() => UserEventRole, (userEventRole) => userEventRole.user)
+    @OneToMany(() => UserEventRole, userEventRole => userEventRole.user)
     userEventRoles!: Set<UserEventRole>;
     
-    @OneToMany(() => User, (user) => user.friends)
+    @OneToMany(() => User, user => user.friends)
     friends!: Set<User>;
 
     constructor() {
@@ -51,6 +51,9 @@ export class User {
     }
 
     public addUserRoleForEvent(userEventRole: UserEventRole): void {
+        if (!this.userEventRoles) {
+            this.userEventRoles = new Set<UserEventRole>();
+        }
         this.userEventRoles.add(userEventRole);
     }
 
@@ -68,6 +71,9 @@ export class User {
     }
 
     public addFriend(user: User): void {
+        if (!this.friends) {
+            this.friends = new Set<User>();
+        }
         this.friends.add(user);
     }
 

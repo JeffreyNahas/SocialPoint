@@ -5,7 +5,6 @@ import { Category } from "../model/Category";
 import { User } from "../model/User";
 import { Review } from "../model/Review";
 import { Injectable } from "@nestjs/common";
-import { Location } from '../model/Location';
 
 
 @Injectable()
@@ -44,7 +43,7 @@ export class EventRepository extends Repository<Event> {
         venueId?: number;
         category?: Category;
         organizerId?: number;
-        location?: Location;
+        location?: string;
         country?: string;
         city?: string;
         state?: string;

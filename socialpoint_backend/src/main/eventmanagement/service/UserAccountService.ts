@@ -1,16 +1,20 @@
-import { Injectable, NotFoundException, UnauthorizedException } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
+import { Injectable, NotFoundException, UnauthorizedException, HttpException, HttpStatus } from "@nestjs/common";
 import { UserAccountRepository } from "../repository/UserAccountRepository";
 import { UserAccount } from "../model/UserAccount";
 
 @Injectable()
 export class UserAccountService {
     constructor(
-        @InjectRepository(UserAccountRepository)
-        private readonly userAccountRepository: UserAccountRepository,
+        private readonly userAccountRepository: UserAccountRepository
     ) {}
 
     async createUserAccount(name: string, email: string, phoneNumber: string, password: string): Promise<UserAccount> {
+        // Check if email already exists
+        const existingAccount = await this.userAccountRepository.findUserAccountByEmail(email);
+        if (existingAccount) {
+            throw new HttpException('Email already exists', HttpStatus.BAD_REQUEST);
+        }
+
         const userAccount = new UserAccount(name, email, phoneNumber, password);
         return await this.userAccountRepository.save(userAccount);
     }

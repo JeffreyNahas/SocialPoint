@@ -1,38 +1,48 @@
-import { AppDataSource } from "../../../data-source"; // Replace with your data source path
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UserAccount } from '../model/UserAccount';
-import { Injectable } from "@nestjs/common";
 import { User } from "../model/User";
 
 @Injectable()
-export class UserAccountRepository extends Repository<UserAccount> {
+export class UserAccountRepository {
+    constructor(
+        @InjectRepository(UserAccount)
+        private repository: Repository<UserAccount>
+    ) {}
 
-  // Find a UserAccount by ID
-  async findUserAccountById(id: number): Promise<UserAccount | null> {
-    return await this.findOne({
-      where: { id },
-      relations: ['user'], // Load the related user
-    });
-  }
+    // Find a UserAccount by ID
+    async findUserAccountById(id: number): Promise<UserAccount | null> {
+        return await this.repository.findOne({ 
+            where: { id },
+            relations: ['user']
+        });
+    }
 
-  // Find a UserAccount by email
-  async findUserAccountByEmail(email: string): Promise<UserAccount | null> {
-    return await this.findOne({
-      where: { email },
-      relations: ['user'],
-    });
-  }
+    // Find a UserAccount by email
+    async findUserAccountByEmail(email: string): Promise<UserAccount | null> {
+        return await this.repository.findOne({ 
+            where: { email },
+            relations: ['user']
+        });
+    }
 
-  async findAllUserAccounts(): Promise<UserAccount[]> {
-    return await this.find();
-  }
+    async findAllUserAccounts(): Promise<UserAccount[]> {
+        return await this.repository.find();
+    }
 
-  async findUserAccountsByFullName(fullName: string): Promise<UserAccount[]> {
-    return await this.find({ where: { fullName } });
-  }
+    async findUserAccountsByFullName(fullName: string): Promise<UserAccount[]> {
+        return await this.repository.find({ 
+            where: { fullName },
+            relations: ['user']
+        });
+    }
 
-  async findUserAccountsByPhoneNumber(phoneNumber: string): Promise<UserAccount[]> {
-    return await this.find({ where: { phoneNumber } });
-  }
+    async findUserAccountsByPhoneNumber(phoneNumber: string): Promise<UserAccount[]> {
+        return await this.repository.find({ where: { phoneNumber } });
+    }
 
+    async save(userAccount: UserAccount): Promise<UserAccount> {
+        return await this.repository.save(userAccount);
+    }
 }

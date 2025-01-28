@@ -15,10 +15,7 @@ export class ReviewService {
 
     // createReview in repository
     async createReview(event: Event, user: User, rating: Rating, comment: string, reviewDate: Date): Promise<Review> {
-        const review = new Review(rating, comment);
-        review.setEvent(event);
-        review.setUser(user);
-        review.setReplies([]);
+        const review = new Review(user, event, rating, comment, reviewDate);
         return await this.reviewRepository.save(review);
     }
 

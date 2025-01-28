@@ -6,7 +6,6 @@ import { EventResponseDto } from '../dto/EventDto';
 import { VenueService } from '../service/VenueService';
 import { UserService } from '../service/UserService';
 import { Category } from '../model/Category';
-import { Location } from '../model/Location';
 import { Event } from '../model/Event';
 
 @Controller('events')
@@ -59,7 +58,7 @@ export class EventController {
        venueId?: number,
        category?: Category,
        organizerId?: number,
-       location?: Location,
+       location?: string,
        country?: string,
        city?: string,
        state?: string,

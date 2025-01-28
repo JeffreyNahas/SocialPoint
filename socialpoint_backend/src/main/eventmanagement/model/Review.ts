@@ -15,26 +15,32 @@ export class Review {
     user!: User;
 
     @Column()
-    rating: Rating;
+    rating!: Rating;
 
     @Column()
-    reviewDate: Date;
+    reviewDate!: Date;
 
     @Column()
-    comment: string;
+    comment!: string;
 
-    @OneToMany(() => Review, (review) => review.replies)
-    replies: Review[] = [];
+    @OneToMany(() => Review, review => review.parentReview)
+    replies!: Review[];
 
+    @ManyToOne(() => Review, review => review.replies)
+    parentReview?: Review;
 
-
-    constructor(rating: Rating, comment: string) {
+    constructor(user: User, event: Event, rating: Rating, comment: string, reviewDate: Date) {
+        this.user = user;
+        this.event = event;
         this.rating = rating;
-        this.reviewDate = new Date();
         this.comment = comment;
+        this.reviewDate = reviewDate;
     }
 
     public addReply(reply: Review): void {
+        if (!this.replies) {
+            this.replies = [];
+        }
         this.replies.push(reply);
     }
 

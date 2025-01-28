@@ -1,6 +1,5 @@
 import { Repository } from "typeorm";
 import { Venue } from "../model/Venue";
-import { Location } from "../model/Location";
 import { Event } from "../model/Event";
 import { Injectable } from "@nestjs/common";
 
@@ -14,9 +13,8 @@ export class VenueRepository extends Repository<Venue> {
         return await this.find();
     }
 
-    async findEventsByVenueId(id: number): Promise<Set<Event>> {
-      const venue = await this.findOne({ where: { id }, relations: ['events'] });
-      return new Set(venue?.eventsHosted || []);
+    async findEventsByVenue(venue: Venue): Promise<Set<Event>> {
+        return new Set(venue?.events || []);
     }
 
     async findVenuesByFilters(filters: {
