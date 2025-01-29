@@ -6,6 +6,7 @@ import { Venue } from './main/eventmanagement/model/Venue';
 import { Review } from './main/eventmanagement/model/Review'; 
 import { Notification } from './main/eventmanagement/model/Notification';
 import { UserEventRole } from './main/eventmanagement/model/UserEventRole';
+import { Category } from './main/eventmanagement/model/Category';
 // Add other entities as needed
 
 export const AppDataSource = new DataSource({
@@ -18,4 +19,8 @@ export const AppDataSource = new DataSource({
   synchronize: true, // Set to false in production
   logging: true,
   entities: [User, UserAccount, Event, Venue, Review, Notification, UserEventRole], // Add all your models here
+    // Add these additional options
+  extra: {
+    max: 100
+  }
 });

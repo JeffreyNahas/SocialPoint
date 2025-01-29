@@ -1,11 +1,8 @@
 export enum Category {
-    CONCERT = "CONCERT",
-    FESTIVAL = "FESTIVAL",
-    CONFERENCE = "CONFERENCE",
-    MEETING = "MEETING",
-    SOCIAL = "SOCIAL",
-    MUSIC = "MUSIC",
-    EDUCATION = "EDUCATION",
-    WORKSHOP = "WORKSHOP",
-    OTHER = "OTHER"
+    MUSIC = 'MUSIC',
+    SPORTS = 'SPORTS',
+    ARTS = 'ARTS',
+    FOOD = 'FOOD',
+    TECHNOLOGY = 'TECHNOLOGY',
+    OTHER = 'OTHER'
 }   

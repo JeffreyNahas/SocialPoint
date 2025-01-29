@@ -8,7 +8,7 @@ import { UserService } from '../service/UserService';
 import { Category } from '../model/Category';
 import { Event } from '../model/Event';
 
-@Controller('events')
+@Controller('api/events')
 export class EventController {
    constructor(
        private readonly eventService: EventService,
@@ -25,14 +25,17 @@ export class EventController {
            if (!venue || !organizer) {
                throw new HttpException('Venue or organizer not found', HttpStatus.NOT_FOUND);
            }
+           const date = new Date(createDto.date);
+           const startTime = new Date(createDto.startTime);
+           const endTime = new Date(createDto.endTime);
 
            const event = await this.eventService.createEvent(
                createDto.name,
                createDto.description,
                venue,
-               createDto.date,
-               createDto.startTime,
-               createDto.endTime,
+               date,
+               startTime,
+               endTime,
                createDto.category,
                organizer
            );
@@ -87,33 +90,33 @@ export class EventController {
        }
    }
 
-   @Post(':id/attendees/:userId')
-   async addAttendee(
-       @Param('id') eventId: number,
-       @Param('userId') userId: number
-   ): Promise<EventResponseDto> {
-       try {
-           const event = await this.eventService.addAttendeeToEvent(eventId, userId);
-           return this.mapToResponseDto(event);
-       } catch (error: unknown) {
-           const message = error instanceof Error ? error.message : 'Failed to add attendee';
-           throw new HttpException(message, HttpStatus.BAD_REQUEST);
-       }
-   }
+//    @Post(':id/attendees/:userId')
+//    async addAttendee(
+//        @Param('id') eventId: number,
+//        @Param('userId') userId: number
+//    ): Promise<EventResponseDto> {
+//        try {
+//            const event = await this.eventService.addAttendeeToEvent(eventId, userId);
+//            return this.mapToResponseDto(event);
+//        } catch (error: unknown) {
+//            const message = error instanceof Error ? error.message : 'Failed to add attendee';
+//            throw new HttpException(message, HttpStatus.BAD_REQUEST);
+//        }
+//    }
 
-   @Delete(':id/attendees/:userId')
-   async removeAttendee(
-       @Param('id') eventId: number,
-       @Param('userId') userId: number
-   ): Promise<EventResponseDto> {
-       try {
-           const event = await this.eventService.removeAttendeeFromEvent(eventId, userId);
-           return this.mapToResponseDto(event);
-       } catch (error: unknown) {
-           const message = error instanceof Error ? error.message : 'Failed to remove attendee';
-           throw new HttpException(message, HttpStatus.BAD_REQUEST);
-       }
-   }
+//    @Delete(':id/attendees/:userId')
+//    async removeAttendee(
+//        @Param('id') eventId: number,
+//        @Param('userId') userId: number
+//    ): Promise<EventResponseDto> {
+//        try {
+//            const event = await this.eventService.removeAttendeeFromEvent(eventId, userId);
+//            return this.mapToResponseDto(event);
+//        } catch (error: unknown) {
+//            const message = error instanceof Error ? error.message : 'Failed to remove attendee';
+//            throw new HttpException(message, HttpStatus.BAD_REQUEST);
+//        }
+//    }
 
    private mapToResponseDto(event: Event): EventResponseDto {
         const response = new EventResponseDto();

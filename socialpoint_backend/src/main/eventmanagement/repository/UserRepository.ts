@@ -27,21 +27,27 @@ export class UserRepository {
     async findUserByUserAccountId(userAccountId: number): Promise<User | null> {
         return await this.repository.findOne({
             where: { userAccount: { id: userAccountId } },
-            relations: ['userAccount', 'userEventRoles', 'attendedEvents', 'organizedEvents', 'friends', 'reviews']
+            relations: ['userAccount', 'userEventRoles', 'friends', 'organizedEvents', 'reviews']
         });
     }
 
     async findUserById(id: number): Promise<User | null> {
         return await this.repository.findOne({
-          where: { userAccount: { id: id } },
-          relations: ['userAccount', 'userEventRoles', 'attendedEvents', 'organizedEvents', 'friends', 'reviews']
+          where: { id },
+          relations: [
+            'userAccount', 
+            'userEventRoles', 
+            'friends', 
+            'organizedEvents',
+            'reviews'
+          ]
         });
       }
 
     async findFriends(user: User): Promise<User[]> {
         return await this.repository.find({
             where: { id: In(Array.from(user.friends.values()).map(friend => friend.id)) },
-            relations: ['userAccount', 'userEventRoles', 'attendedEvents', 'organizedEvents', 'friends', 'reviews']
+            relations: ['userAccount', 'userEventRoles', 'friends', 'organizedEvents', 'reviews']
         });
     }
 

@@ -17,7 +17,15 @@ import { UserEventRole } from './main/eventmanagement/model/UserEventRole';
 import { AppDataSource } from './data-source';
 import { DataSource } from 'typeorm';
 import { EventRepository } from './main/eventmanagement/repository/EventRepository';
-
+import { EventController } from './main/eventmanagement/controller/EventController';
+import { EventService } from './main/eventmanagement/service/EventService';
+import { VenueService } from './main/eventmanagement/service/VenueService';
+import { ReviewRepository } from './main/eventmanagement/repository/ReviewRepository';
+import { ReviewService } from './main/eventmanagement/service/ReviewService';
+import { UserEventRoleRepository } from './main/eventmanagement/repository/UserEventRoleRepository';
+import { VenueRepository } from './main/eventmanagement/repository/VenueRepository';
+import { NotificationsRepository } from './main/eventmanagement/repository/NotificationRepository';
+import { VenueController } from './main/eventmanagement/controller/VenueController';
 @Module({
     imports: [
         TypeOrmModule.forRoot(AppDataSource.options),
@@ -34,13 +42,22 @@ import { EventRepository } from './main/eventmanagement/repository/EventReposito
     controllers: [
         TestController, 
         UserController, 
-        UserAccountController
+        UserAccountController,
+        EventController,
+        VenueController
     ],
     providers: [
         UserService,
         UserAccountService,
         UserRepository,
-        EventRepository,       // Add EventRepository here too
+        EventRepository,
+        EventService,
+        VenueService,
+        ReviewService,
+        ReviewRepository,
+        NotificationsRepository,
+        UserEventRoleRepository,
+        VenueRepository,
         UserAccountRepository
     ]
 })

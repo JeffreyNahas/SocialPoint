@@ -1,4 +1,4 @@
-import { Entity, ManyToOne, PrimaryGeneratedColumn, Column, OneToMany, OneToOne } from "typeorm";
+import { Entity, ManyToOne, PrimaryGeneratedColumn, Column, OneToMany, OneToOne, JoinColumn } from "typeorm";
 import { User } from "./User";
 import { Event } from "./Event";
 import { Rating } from "./ReviewRating";
@@ -9,9 +9,11 @@ export class Review {
     id!: number;
 
     @ManyToOne(() => Event, (event) => event.reviews)
+    @JoinColumn()
     event!: Event;
 
     @OneToOne(() => User)
+    @JoinColumn()
     user!: User;
 
     @Column()

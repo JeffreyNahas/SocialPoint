@@ -18,7 +18,7 @@ import {
     @ManyToOne(() => User, (user) => user.userEventRoles)
     user!: User;
   
-    @OneToOne(() => Event)
+    @ManyToOne(() => Event, (event) => event.userEventRoles)
     event!: Event;
   
     @Column()

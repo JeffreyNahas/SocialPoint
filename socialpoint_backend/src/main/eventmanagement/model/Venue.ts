@@ -22,8 +22,9 @@ export class Venue {
         this.name = name;
         this.location = location;
         this.capacity = capacity;
+        this.events = new Set<Event>();
     }
-
+    
     public getName(): string {
         return this.name;
     }

@@ -10,14 +10,16 @@ import { Review } from '../model/Review';
 import { Notification } from '../model/Notification';
 import { ReviewService } from './ReviewService';
 import { ReviewRepository } from '../repository/ReviewRepository';
+import { UserRepository } from '../repository/UserRepository';
+import { VenueRepository } from '../repository/VenueRepository';
 
 @Injectable()
 export class EventService {
   
   constructor(
-    @InjectRepository(EventRepository)
     private readonly eventRepository: EventRepository,
-    private readonly userService: UserService,
+    private readonly userRepository: UserRepository,
+    private readonly venueRepository: VenueRepository,
     private readonly reviewRepository: ReviewRepository,
   ) {}
 
@@ -32,9 +34,16 @@ export class EventService {
     category: Category,
     organizer: User,
   ): Promise<Event> {
-    const event = new Event(name, description, venue, date, startTime, endTime, category, organizer);
+    const event = new Event();
+    event.setName(name);
+    event.setDescription(description);
+    event.setVenue(venue);
+    event.setDate(date);
+    event.setStartTime(startTime);
+    event.setEndTime(endTime);
+    event.setCategory(category);
+    event.setOrganizer(organizer);
     return await this.eventRepository.save(event);
-    
   }
 
   // updateEvent in repository
@@ -77,32 +86,32 @@ export class EventService {
   }
 
   // Add an attendee to an event
-  public async addAttendeeToEvent(eventId: number, userId: number): Promise<Event> {
-    const event = await this.eventRepository.findEventById(eventId);
-    if (!event) {
-      throw new Error('Event not found');
-    }
-    const user = await this.userService.getUserById(userId);
-    if (!user) {
-      throw new Error('User not found');
-    }
-    event.addAttendee(user);
-    return await this.eventRepository.save(event);
-  }
+  // public async addAttendeeToEvent(eventId: number, userId: number): Promise<Event> {
+  //   const event = await this.eventRepository.findEventById(eventId);
+  //   if (!event) {
+  //     throw new Error('Event not found');
+  //   }
+  //   const user = await this.userRepository.findUserById(userId);
+  //   if (!user) {
+  //     throw new Error('User not found');
+  //   }
+  //   event.addAttendee(user);
+  //   return await this.eventRepository.save(event);
+  // }
 
   // removeAttendeeFromEvent in repository
-  public async removeAttendeeFromEvent(eventId: number, userId: number): Promise<Event> {
-    const event = await this.eventRepository.findEventById(eventId);
-    if (!event) {
-      throw new Error('Event not found');
-    }
-    const user = await this.userService.getUserById(userId);
-    if (!user) {
-      throw new Error('User not found'); 
-    }
-    event.removeAttendee(user);
-    return await this.eventRepository.save(event);
-  }
+  // public async removeAttendeeFromEvent(eventId: number, userId: number): Promise<Event> {
+  //   const event = await this.eventRepository.findEventById(eventId);
+  //   if (!event) {
+  //     throw new Error('Event not found');
+  //   }
+  //   const user = await this.userRepository.findUserById(userId);
+  //   if (!user) {
+  //     throw new Error('User not found'); 
+  //   }
+  //   event.removeAttendee(user);
+  //   return await this.eventRepository.save(event);
+  // }
 
   async getReviewsByEvent(eventId: number): Promise<Review[]> {
     const event = await this.eventRepository.findEventById(eventId);
@@ -112,9 +121,9 @@ export class EventService {
     return await this.reviewRepository.findReviewsByEvent(eventId);
   }
 
-  async getAttendeesByEvent(eventId: number): Promise<User[]> {
-    return await this.eventRepository.findAttendeesByEvent(eventId);
-  }
+  // async getAttendeesByEvent(eventId: number): Promise<User[]> {
+  //   return await this.eventRepository.findAttendeesByEvent(eventId);
+  // }
 
   async getOrganizerByEvent(eventId: number): Promise<User | null> {
     return await this.eventRepository.findOrganizerByEvent(eventId);

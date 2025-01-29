@@ -1,16 +1,26 @@
-import { Repository } from "typeorm";
-import { Venue } from "../model/Venue";
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Venue } from '../model/Venue';
 import { Event } from "../model/Event";
-import { Injectable } from "@nestjs/common";
 
 @Injectable()
-export class VenueRepository extends Repository<Venue> {
+export class VenueRepository {
+    constructor(
+        @InjectRepository(Venue)
+        private repository: Repository<Venue>
+    ) {}
+
     async findVenueById(id: number): Promise<Venue | null> {
-        return await this.findOne({ where: { id } });
+        return await this.repository.findOne({ where: { id } });
+    }
+
+    async save(venue: Venue): Promise<Venue> {
+        return await this.repository.save(venue);
     }
 
     async findAllVenues(): Promise<Venue[]> {
-        return await this.find();
+        return await this.repository.find();
     }
 
     async findEventsByVenue(venue: Venue): Promise<Set<Event>> {
@@ -24,7 +34,7 @@ export class VenueRepository extends Repository<Venue> {
         minCapacity?: number;
         maxCapacity?: number;
       }): Promise<Venue[]> {
-        const queryBuilder = this.createQueryBuilder('venue')
+        const queryBuilder = this.repository.createQueryBuilder('venue')
           .leftJoinAndSelect('venue.location', 'location')
           .leftJoinAndSelect('venue.events', 'events');
     
@@ -54,4 +64,7 @@ export class VenueRepository extends Repository<Venue> {
         return await queryBuilder.getMany();
       }
 
+    async delete(id: number) {
+        return await this.repository.delete(id);
+    }
 }

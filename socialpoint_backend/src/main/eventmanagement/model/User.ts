@@ -27,12 +27,36 @@ export class User {
     @OneToMany(() => UserEventRole, userEventRole => userEventRole.user)
     userEventRoles!: Set<UserEventRole>;
     
-    @OneToMany(() => User, user => user.friends)
+    @ManyToMany(() => User, user => user.friends)
+    @JoinTable({
+        name: 'user_friends',
+        joinColumn: {
+            name: 'user_id',
+            referencedColumnName: 'id'
+        },
+        inverseJoinColumn: {
+            name: 'friend_id',
+            referencedColumnName: 'id'
+        }
+    })
     friends!: Set<User>;
+
+    @OneToMany(() => Event, event => event.organizer)
+    organizedEvents!: Set<Event>;
+
+    // @ManyToMany(() => Event, event => event.listOfAttendees)
+    // @JoinTable()
+    // attendedEvents!: Set<Event>;
+
+    @OneToMany(() => Review, review => review.user)
+    reviews!: Set<Review>;
 
     constructor() {
         this.userEventRoles = new Set<UserEventRole>();
         this.friends = new Set<User>();
+        // this.attendedEvents = new Set<Event>();
+        this.organizedEvents = new Set<Event>();
+        this.reviews = new Set<Review>();
     }
 
     public getUserAccount(): UserAccount {

@@ -1,13 +1,11 @@
 import { Injectable } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
+import { VenueRepository } from "../repository/VenueRepository";
 import { Venue } from "../model/Venue";
 import { Event } from "../model/Event";
-import { VenueRepository } from "../repository/VenueRepository";
 
 @Injectable()
 export class VenueService {
     constructor(
-        @InjectRepository(VenueRepository)
         private readonly venueRepository: VenueRepository,
     ) {}
 

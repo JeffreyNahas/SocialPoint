@@ -30,29 +30,43 @@ export class Event {
     @Column({ type: 'text' })
     description!: string;
   
-    @ManyToOne(() => Venue, { cascade: true, eager: true })
-    @JoinColumn()
+    @ManyToOne(() => Venue, (venue) => venue.events, { eager: true })
+    @JoinColumn({ name: 'venue_id' })
     venue!: Venue;
   
     @Column({ type: 'date' })
     date!: Date;
   
-    @Column({ type: 'time' })
+    @Column({ type: 'timestamp' })
     startTime!: Date;
-  
-    @Column({ type: 'time' })
+    
+    @Column({ type: 'timestamp' })
     endTime!: Date;
   
-    @Column()
+    @Column({
+        type: 'enum',
+        enum: Category,
+        default: Category.OTHER
+    })
     category!: Category;
   
-    @OneToOne(() => User)
-    @JoinColumn()
+    @ManyToOne(() => User)
+    @JoinColumn({ name: 'organizer_id' })
     organizer!: User;
   
-    @ManyToMany(() => User)
-    @JoinTable()
-    listOfAttendees!: Set<User>;
+    // @ManyToMany(() => User, user => user.attendedEvents)
+    // @JoinTable({
+    //     name: 'event_attendees',
+    //     joinColumn: {
+    //         name: 'event_id',
+    //         referencedColumnName: 'id'
+    //     },
+    //     inverseJoinColumn: {
+    //         name: 'user_id',
+    //         referencedColumnName: 'id'
+    //     }
+    // })
+    // listOfAttendees!: Set<User>;
 
     @OneToMany(() => Review, review => review.event)
     reviews!: Review[];
@@ -60,17 +74,12 @@ export class Event {
     @OneToMany(() => Notification, notification => notification.event)
     notifications!: Set<Notification>;
 
+    @OneToMany(() => UserEventRole, userEventRole => userEventRole.event)
+    userEventRoles!: UserEventRole[];
 
-    
-    constructor(name: string, description: string, venue: Venue, date: Date, startTime: Date, endTime: Date, category: Category, organizer: User) {
-        this.name = name;
-        this.description = description;
-        this.category = category;
-        this.venue = venue;
-        this.date = date;
-        this.startTime = startTime;
-        this.endTime = endTime;
-        this.organizer = organizer;
+    constructor() {
+        // this.listOfAttendees = new Set<User>();
+        this.notifications = new Set<Notification>();
     }
 
     public getName(): string {
@@ -104,9 +113,9 @@ export class Event {
     public getOrganizer(): User {
         return this.organizer;
     }
-    public getListOfAttendees(): Set<User> {
-        return this.listOfAttendees;
-    }
+    // public getListOfAttendees(): Set<User> {
+    //     return this.listOfAttendees;
+    // }
 
 
     public setName(name: string): void {
@@ -193,29 +202,29 @@ export class Event {
         this.name = newName;
         this.addNotification(new Notification(`${this.name} Name updated to ${newName}`, new Date(), this, "organizer"));
     }
-    public addAttendee(user: User): void {
-        if (!this.listOfAttendees) {
-            this.listOfAttendees = new Set<User>();
-        }
-        if (user.getUserEventRoleForEvent(this)?.getRole() == Role.Attendee) {
-            this.listOfAttendees.add(user);
-        }
-    }
+    // public addAttendee(user: User): void {
+    //     if (!this.listOfAttendees) {
+    //         this.listOfAttendees = new Set<User>();
+    //     }
+    //     if (user.getUserEventRoleForEvent(this)?.getRole() == Role.Attendee) {
+    //         this.listOfAttendees.add(user);
+    //     }
+    // }
 
-    public removeAttendee(user: User): void {
-        this.listOfAttendees.delete(user);
-    }
+    // public removeAttendee(user: User): void {
+    //     this.listOfAttendees.delete(user);
+    // }
 
     public removeReview(reviewId: number): void {
         this.reviews = this.reviews.filter(review => review.id !== reviewId);
     }
 
-    public hasAttendee(user: User): boolean {
-        return this.listOfAttendees.has(user);
-    }
+    // public hasAttendee(user: User): boolean {
+    //     return this.listOfAttendees.has(user);
+    // }
 
-    public getAttendeesCount(): number {
-        return this.listOfAttendees.size;
-    }
+    // public getAttendeesCount(): number {
+    //     return this.listOfAttendees.size;
+    // }
 
 }

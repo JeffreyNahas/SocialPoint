@@ -27,8 +27,8 @@
 //    private mapToResponseDto(review: Review): ReviewResponseDto {
 //        const response = new ReviewResponseDto();
 //        response.id = review.id;
-//        response.userId = review.getUser().id;
-//        response.eventId = review.getEvent().id;
+//        response.user = review.getUser();
+//        response.event = review.getEvent();
 //        response.rating = review.getRating();
 //        response.comment = review.getComment();
 //        response.reviewDate = review.getReviewDate();
