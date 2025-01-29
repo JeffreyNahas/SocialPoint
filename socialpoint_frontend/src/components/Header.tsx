@@ -18,8 +18,8 @@ const Header: React.FC<HeaderProps> = ({ hideButtons = false }) => {
         </div>
         {!hideButtons && (
           <nav className="nav-buttons">
-            <button className="nav-button">Home</button>
-            <button className="nav-button">My Events</button>
+            <button className="nav-button" onClick={() => navigate('/')}>Home</button>
+            <button className="nav-button" onClick={() => navigate('/my-events')}>My Events</button>
             <button className="nav-button" onClick={() => navigate('/login')}>Log in</button>
           </nav>
         )}
