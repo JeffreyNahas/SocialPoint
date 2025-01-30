@@ -1,8 +1,7 @@
 import React, { useState, useEffect, FormEvent } from 'react';
 import Header from './Header';
 import './MyEvents.css';
-import { createVenue, createEvent, getVenues } from '../api/api';
-import { CreateVenueDto, CreateEventDto } from '../api/types';
+import { createVenue, createEvent, getVenues, CreateVenueDto, CreateEventDto } from '../services/eventService';
 
 interface Event {
   id: number;
