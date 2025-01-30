@@ -5,16 +5,27 @@ import { Review } from "../model/Review";
 import { Rating } from "../model/ReviewRating";
 import { User } from "../model/User";
 import { Event } from "../model/Event";
+import { UserRepository } from "../repository/UserRepository";
+import { EventRepository } from "../repository/EventRepository";
 
 @Injectable()
 export class ReviewService {
     constructor(
         @InjectRepository(ReviewRepository)
         private readonly reviewRepository: ReviewRepository,
+        private readonly eventRepository: EventRepository,
+        private readonly userRepository: UserRepository
     ) {}
 
     // createReview in repository
-    async createReview(event: Event, user: User, rating: Rating, comment: string, reviewDate: Date): Promise<Review> {
+    async createReview(userId: number, eventId: number, rating: Rating, comment: string, reviewDate: Date): Promise<Review> {
+        const user = await this.userRepository.findOne({ where: { id: userId } });
+        const event = await this.eventRepository.findOne({ where: { id: eventId } });
+        
+        if (!user || !event) {
+            throw new Error('User or Event not found');
+        }
+
         const review = new Review(user, event, rating, comment, reviewDate);
         return await this.reviewRepository.save(review);
     }
