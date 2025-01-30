@@ -48,11 +48,12 @@ const LoginPage: React.FC = () => {
 
       const userData = await response.json();
       
-      // Store user data in localStorage or state management
+      // Store both user data and token
       localStorage.setItem('user', JSON.stringify(userData));
+      localStorage.setItem('token', userData.token); // Assuming token is in the response
       
-      // Redirect to welcome page
-      navigate('/welcome');
+      // Redirect to events page
+      navigate('/events');
     } catch (error) {
       console.error('Login error:', error);
       setError(error instanceof Error ? error.message : 'Login failed. Please try again.');

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, FormEvent } from 'react';
-import Header from './Header';
+import AuthHeader from './AuthHeader';
 import './MyEvents.css';
 import { createVenue, createEvent, getVenues, CreateVenueDto, CreateEventDto } from '../services/eventService';
 
@@ -97,7 +97,7 @@ const MyEvents: React.FC = () => {
 
   return (
     <div className="my-events-page">
-      <Header />
+      <AuthHeader />
       <div className="my-events-container">
         <div className="events-header">
           <h1>My Events</h1>
