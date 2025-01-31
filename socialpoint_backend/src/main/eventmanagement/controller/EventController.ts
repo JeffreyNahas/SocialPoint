@@ -26,15 +26,29 @@ export class EventController {
            if (!organizer) {
                throw new HttpException('Venue or organizer not found', HttpStatus.NOT_FOUND);
            }
-           const date = new Date(createDto.date);
-           const startTime = new Date(createDto.startTime);
-           const endTime = new Date(createDto.endTime);
-
+   
+           // Combine date and time properly
+           const baseDate = new Date(createDto.date);
+           
+           // Parse start time and combine with base date
+           const [startHours, startMinutes] = createDto.startTime.split(':');
+           const startTime = new Date(baseDate);
+           startTime.setHours(parseInt(startHours), parseInt(startMinutes));
+   
+           // Parse end time and combine with base date
+           const [endHours, endMinutes] = createDto.endTime.split(':');
+           const endTime = new Date(baseDate);
+           endTime.setHours(parseInt(endHours), parseInt(startMinutes));
+           if (parseInt(endHours) < parseInt(startHours)) {
+               // If end time is earlier than start time, it's the next day
+               endTime.setDate(endTime.getDate() + 1);
+           }
+   
            const event = await this.eventService.createEvent(
                createDto.name,
                createDto.description,
-               createDto.venueAddress,
-               date,
+               venue,
+               baseDate,
                startTime,
                endTime,
                createDto.category,
@@ -42,6 +56,7 @@ export class EventController {
            );
            return this.mapToResponseDto(event);
        } catch (error: unknown) {
+           console.error('Error creating event:', error);
            const message = error instanceof Error ? error.message : 'Failed to create event';
            throw new HttpException(message, HttpStatus.BAD_REQUEST);
        }

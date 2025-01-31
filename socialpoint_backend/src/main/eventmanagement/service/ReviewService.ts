@@ -5,27 +5,56 @@ import { Review } from "../model/Review";
 import { Rating } from "../model/ReviewRating";
 import { User } from "../model/User";
 import { Event } from "../model/Event";
+import { UserRepository } from "../repository/UserRepository";
+import { EventRepository } from "../repository/EventRepository";
+import { ReplyRequestDto } from "../dto/ReviewDto";
 
 @Injectable()
 export class ReviewService {
     constructor(
-        @InjectRepository(ReviewRepository)
         private readonly reviewRepository: ReviewRepository,
+        private readonly eventRepository: EventRepository,
+        private readonly userRepository: UserRepository
     ) {}
 
     // createReview in repository
-    async createReview(event: Event, user: User, rating: Rating, comment: string, reviewDate: Date): Promise<Review> {
+    async createReview(userId: number, eventId: number, rating: Rating, comment: string, reviewDate: Date, parentReviewId?: number): Promise<Review> {
+        const user = await this.userRepository.findUserById(userId);
+        const event = await this.eventRepository.findEventById(eventId);
+        
+        if (!user || !event) {
+            throw new Error('User or Event not found');
+        }
+
         const review = new Review(user, event, rating, comment, reviewDate);
+
+        if (parentReviewId) {
+            const parentReview = await this.reviewRepository.findReviewById(parentReviewId);
+            if (!parentReview) {
+                throw new Error('Parent review not found');
+            }
+            review.parentReview = parentReview;
+        }
+
         return await this.reviewRepository.save(review);
     }
 
-    async addReplyToReview(reviewId: number, reply: Review): Promise<Review> {
-        const review = await this.reviewRepository.findReviewById(reviewId);
-        if (!review) {
+    async addReplyToReview(reviewId: number, replyDto: ReplyRequestDto): Promise<Review> {
+        const parentReview = await this.reviewRepository.findReviewById(reviewId);
+        if (!parentReview) {
             throw new Error(`Review with ID ${reviewId} not found`);
         }
-        review.addReply(reply);
-        return await this.reviewRepository.save(review);
+
+        const reply = new Review(
+            parentReview.getUser()!,
+            parentReview.getEvent()!,
+            replyDto.rating,
+            replyDto.comment,
+            new Date()
+        );
+        reply.parentReview = parentReview;
+        
+        return await this.reviewRepository.save(reply);
     }
 
     async deleteReplyFromReview(reviewId: number, replyId: number): Promise<Review> {
@@ -84,5 +113,8 @@ export class ReviewService {
         return await this.reviewRepository.findReviewsByDate(date);
     }
 
+    async getReviewById(id: number): Promise<Review | null> {
+        return await this.reviewRepository.findReviewById(id);
+    }
 
 }
