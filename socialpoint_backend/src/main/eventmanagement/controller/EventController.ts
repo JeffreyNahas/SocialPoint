@@ -19,10 +19,11 @@ export class EventController {
    @Post()
    async createEvent(@Body() createDto: CreateEventRequestDto): Promise<EventResponseDto> {
        try {
-           const venue = await this.venueService.getVenueById(createDto.venueId);
+        //    const venue = await this.venueService.getVenueByAddress(createDto.venueAddress);
            const organizer = await this.userService.getUserById(createDto.organizerId);
+           const venue = createDto.venueAddress;
            
-           if (!venue || !organizer) {
+           if (!organizer) {
                throw new HttpException('Venue or organizer not found', HttpStatus.NOT_FOUND);
            }
    
@@ -42,6 +43,9 @@ export class EventController {
                // If end time is earlier than start time, it's the next day
                endTime.setDate(endTime.getDate() + 1);
            }
+
+           console.log(createDto);
+           console.log("Attempting to create event @", venue);
    
            const event = await this.eventService.createEvent(
                createDto.name,

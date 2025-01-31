@@ -11,8 +11,8 @@ export class VenueRepository {
         private repository: Repository<Venue>
     ) {}
 
-    async findVenueById(id: number): Promise<Venue | null> {
-        return await this.repository.findOne({ where: { id } });
+    async findVenueByAddress(location: string): Promise<Venue | null> {
+        return await this.repository.findOne({ where: { location } });
     }
 
     async save(venue: Venue): Promise<Venue> {

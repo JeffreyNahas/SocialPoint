@@ -47,8 +47,8 @@ export class EventRepository {
         return event?.organizer || null;
     }
 
-    async findEventsByVenue(venueId: number): Promise<Event[]> {
-        return await this.repository.find({ where: { venue: { id: venueId } } });
+    async findEventsByVenue(venueAddress: String): Promise<Event[]> {
+        return await this.repository.find({ where: { venue: venueAddress } });
     }
 
     async findEventsByFilters(filters: {

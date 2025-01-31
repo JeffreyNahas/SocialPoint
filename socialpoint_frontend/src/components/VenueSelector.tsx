@@ -23,11 +23,11 @@ export const VenueSelector: React.FC<VenueSelectorProps> = ({
     const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
     const [isScriptLoaded, setIsScriptLoaded] = useState(false);
 
-    useEffect(() => {
-        loadGoogleMapsScript(process.env.REACT_APP_GOOGLE_MAPS_API_KEY, () => {
+;    useEffect(() => {
+        loadGoogleMapsScript(import.meta.env.VITE_GOOGLE_MAPS_API_KEY, () => {
             setIsScriptLoaded(true);
         });
-    }, []);
+    }, [])
     
 
     useEffect(() => {
