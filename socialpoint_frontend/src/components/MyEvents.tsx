@@ -2,6 +2,7 @@ import React, { useState, useEffect, FormEvent } from 'react';
 import AuthHeader from './AuthHeader';
 import './MyEvents.css';
 import { createVenue, createEvent, getVenues, CreateVenueDto, CreateEventDto } from '../services/eventService';
+import { VenueSelector, VenueData } from './VenueSelector';
 
 interface Event {
   id: number;
@@ -35,6 +36,7 @@ const MyEvents: React.FC = () => {
     venueCapacity: '',
     selectedVenueId: ''
   });
+  const [selectedVenue, setSelectedVenue] = useState<VenueData | null>(null);
 
   // Fetch venues when component mounts
   useEffect(() => {
@@ -48,6 +50,12 @@ const MyEvents: React.FC = () => {
     };
     fetchVenues();
   }, []);
+
+  const handleVenueSelected = (venueData: VenueData | null) => {
+    if (venueData) {
+      setSelectedVenue(venueData);
+    }
+  }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setFormData({
@@ -254,21 +262,26 @@ const MyEvents: React.FC = () => {
                       />
                     </div>
                   ) : (
-                    <div className="existing-venue-select">
-                      <select
-                        name="selectedVenueId"
-                        value={formData.selectedVenueId}
-                        onChange={handleInputChange}
-                        required
-                      >
-                        <option value="">Select a Venue</option>
-                        {venues.map(venue => (
-                          <option key={venue.id} value={venue.id}>
-                            {venue.name} - {venue.location}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
+                    // <div className="existing-venue-select">
+                    //   <select
+                    //     name="selectedVenueId"
+                    //     value={formData.selectedVenueId}
+                    //     onChange={handleInputChange}
+                    //     required
+                    //   >
+                    //     <option value="">Select a Venue</option>
+                    //     {venues.map(venue => (
+                    //       <option key={venue.id} value={venue.id}>
+                    //         {venue.name} - {venue.location}
+                    //       </option>
+                    //     ))}
+                    //   </select>
+                    // </div>
+
+                    <VenueSelector
+                      onVenueSelected={handleVenueSelected}
+                      selectedVenue={selectedVenue}
+                    />
                   )}
                 </div>
 
