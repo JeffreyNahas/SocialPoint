@@ -7,6 +7,7 @@ import { User } from "../model/User";
 import { Event } from "../model/Event";
 import { UserRepository } from "../repository/UserRepository";
 import { EventRepository } from "../repository/EventRepository";
+import { ReplyRequestDto } from "../dto/ReviewDto";
 
 @Injectable()
 export class ReviewService {
@@ -38,13 +39,22 @@ export class ReviewService {
         return await this.reviewRepository.save(review);
     }
 
-    async addReplyToReview(reviewId: number, reply: Review): Promise<Review> {
-        const review = await this.reviewRepository.findReviewById(reviewId);
-        if (!review) {
+    async addReplyToReview(reviewId: number, replyDto: ReplyRequestDto): Promise<Review> {
+        const parentReview = await this.reviewRepository.findReviewById(reviewId);
+        if (!parentReview) {
             throw new Error(`Review with ID ${reviewId} not found`);
         }
-        review.addReply(reply);
-        return await this.reviewRepository.save(review);
+
+        const reply = new Review(
+            parentReview.getUser()!,
+            parentReview.getEvent()!,
+            replyDto.rating,
+            replyDto.comment,
+            new Date()
+        );
+        reply.parentReview = parentReview;
+        
+        return await this.reviewRepository.save(reply);
     }
 
     async deleteReplyFromReview(reviewId: number, replyId: number): Promise<Review> {
@@ -103,5 +113,8 @@ export class ReviewService {
         return await this.reviewRepository.findReviewsByDate(date);
     }
 
+    async getReviewById(id: number): Promise<Review | null> {
+        return await this.reviewRepository.findReviewById(id);
+    }
 
 }

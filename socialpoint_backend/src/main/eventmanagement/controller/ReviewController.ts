@@ -1,6 +1,6 @@
-import { Controller, HttpException, HttpStatus, Post, Body } from "@nestjs/common";
+import { Controller, HttpException, HttpStatus, Post, Body, Get, Param } from "@nestjs/common";
 import { ReviewService } from "../service/ReviewService";
-import { ReviewResponseDto } from "../dto/ReviewDto";
+import { ReplyRequestDto, ReviewResponseDto } from "../dto/ReviewDto";
 import { CreateReviewRequestDto } from "../dto/ReviewDto";
 import { Review } from '../model/Review';
 
@@ -28,6 +28,21 @@ export class ReviewController {
        }
    }
 
+   @Get(':id')
+   async getReview(@Param('id') id: number): Promise<ReviewResponseDto> {
+       const review = await this.reviewService.getReviewById(id);
+       if (!review) {
+           throw new HttpException('Review not found', HttpStatus.NOT_FOUND);
+       }
+       return this.mapToResponseDto(review);
+   }
+
+   @Post(':id/replies')
+   async addReply(@Param('id') id: number, @Body() replyDto: ReplyRequestDto): Promise<ReviewResponseDto> {
+       const review = await this.reviewService.addReplyToReview(id, replyDto);
+       return this.mapToResponseDto(review);
+   }
+
    private mapToResponseDto(review: Review): ReviewResponseDto {
        const response = new ReviewResponseDto();
        response.id = review.id;
@@ -47,6 +62,14 @@ export class ReviewController {
        response.rating = review.getRating();
        response.comment = review.getComment();
        response.reviewDate = review.getReviewDate();
+       
+       response.replies = review.getReplies().map(reply => ({
+           id: reply.id,
+           comment: reply.getComment(),
+           rating: reply.getRating(),
+           userId: reply.getUser()?.id || 0
+       }));
+       
        return response;
    }
 }

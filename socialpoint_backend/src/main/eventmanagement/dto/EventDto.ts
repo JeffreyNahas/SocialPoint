@@ -15,17 +15,17 @@ export class CreateEventRequestDto {
   @IsNotEmpty()
   venueId!: number;
 
-  @IsDate()
+  @IsString()
   @IsNotEmpty()
-  date!: Date;
+  date!: string;
 
-  @IsDate()
+  @IsString()
   @IsNotEmpty()
-  startTime!: Date;
+  startTime!: string;
 
-  @IsDate()
+  @IsString()
   @IsNotEmpty()
-  endTime!: Date;
+  endTime!: string;
 
   @IsEnum(Category)
   @IsNotEmpty()
@@ -50,17 +50,17 @@ export class UpdateEventRequestDto {
   @IsOptional()
   venueId?: number;
 
-  @IsDate()
+  @IsString()
   @IsOptional()
-  date?: Date;
+  date?: string;
 
-  @IsDate()
+  @IsString()
   @IsOptional()
-  startTime?: Date;
+  startTime?: string;
 
-  @IsDate()
+  @IsString()
   @IsOptional()
-  endTime?: Date;
+  endTime?: string;
 
   @IsEnum(Category)
   @IsOptional()
