@@ -9,27 +9,29 @@ export class Review {
     id!: number;
 
     @ManyToOne(() => Event, (event) => event.reviews)
-    @JoinColumn()
     event!: Event;
 
-    @OneToOne(() => User)
-    @JoinColumn()
+    @ManyToOne(() => User)
     user!: User;
 
-    @Column()
+    @Column({
+        type: 'enum',
+        enum: Rating,
+        nullable: false
+    })
     rating!: Rating;
-
-    @Column()
-    reviewDate!: Date;
 
     @Column()
     comment!: string;
 
+    @Column()
+    reviewDate!: Date;
+
+    @ManyToOne(() => Review, review => review.replies, { nullable: true })
+    parentReview?: Review;
+
     @OneToMany(() => Review, review => review.parentReview)
     replies!: Review[];
-
-    @ManyToOne(() => Review, review => review.replies)
-    parentReview?: Review;
 
     constructor(user: User, event: Event, rating: Rating, comment: string, reviewDate: Date) {
         this.user = user;

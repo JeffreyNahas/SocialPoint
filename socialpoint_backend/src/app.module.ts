@@ -26,6 +26,7 @@ import { UserEventRoleRepository } from './main/eventmanagement/repository/UserE
 import { VenueRepository } from './main/eventmanagement/repository/VenueRepository';
 import { NotificationsRepository } from './main/eventmanagement/repository/NotificationRepository';
 import { VenueController } from './main/eventmanagement/controller/VenueController';
+import { ReviewController } from './main/eventmanagement/controller/ReviewController';
 @Module({
     imports: [
         TypeOrmModule.forRoot(AppDataSource.options),
@@ -44,7 +45,8 @@ import { VenueController } from './main/eventmanagement/controller/VenueControll
         UserController, 
         UserAccountController,
         EventController,
-        VenueController
+        VenueController,
+        ReviewController
     ],
     providers: [
         UserService,

@@ -16,10 +16,14 @@ export class ReviewController {
                createDto.eventId,
                createDto.rating,
                createDto.comment,
-               new Date()
+               new Date(),
+               createDto.parentReviewId
            );
            return this.mapToResponseDto(review);
-       } catch (error) {
+       } catch (error: unknown) {
+           if (error instanceof Error) {
+               throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+           }
            throw new HttpException('Failed to create review', HttpStatus.BAD_REQUEST);
        }
    }

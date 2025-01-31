@@ -17,6 +17,10 @@ export class CreateReviewRequestDto {
  @IsString()
  @IsNotEmpty()
  comment!: string;
+
+ @IsNumber()
+ @IsOptional()
+ parentReviewId?: number;
 }
 
 export class UpdateReviewRequestDto {
