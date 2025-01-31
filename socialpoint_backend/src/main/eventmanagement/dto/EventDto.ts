@@ -11,9 +11,9 @@ export class CreateEventRequestDto {
   @IsNotEmpty()
   description!: string;
 
-  @IsNumber()
+  @IsString()
   @IsNotEmpty()
-  venueId!: number;
+  venueAddress!: string;
 
   @IsDate()
   @IsNotEmpty()
@@ -79,10 +79,7 @@ export class EventResponseDto {
   description!: string;
 
   @IsNotEmpty()
-  venue!: {
-    id: number;
-    name: string;
-  };
+  venue!: String;
 
   @IsDate()
   date!: Date;

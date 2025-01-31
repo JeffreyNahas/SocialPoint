@@ -19,10 +19,11 @@ export class EventController {
    @Post()
    async createEvent(@Body() createDto: CreateEventRequestDto): Promise<EventResponseDto> {
        try {
-           const venue = await this.venueService.getVenueById(createDto.venueId);
+        //    const venue = await this.venueService.getVenueByAddress(createDto.venueAddress);
            const organizer = await this.userService.getUserById(createDto.organizerId);
+           const venue = createDto.venueAddress;
            
-           if (!venue || !organizer) {
+           if (!organizer) {
                throw new HttpException('Venue or organizer not found', HttpStatus.NOT_FOUND);
            }
            const date = new Date(createDto.date);
@@ -32,7 +33,7 @@ export class EventController {
            const event = await this.eventService.createEvent(
                createDto.name,
                createDto.description,
-               venue,
+               createDto.venueAddress,
                date,
                startTime,
                endTime,

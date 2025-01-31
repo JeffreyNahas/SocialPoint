@@ -210,6 +210,16 @@
   border-radius: 15px;
 }
 
+.venue-selector input {
+  width: 100%;
+  padding: 8px;
+  border-radius: 4px;
+  background-color: #1a1a1a;
+  color: white;
+  border: 1px solid #333;
+  margin-bottom: 10px;
+}
+
 .venue-toggle {
   display: flex;
   gap: 1rem;

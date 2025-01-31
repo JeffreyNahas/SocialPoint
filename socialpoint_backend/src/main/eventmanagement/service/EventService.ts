@@ -27,7 +27,7 @@ export class EventService {
   async createEvent(
     name: string,
     description: string,
-    venue: Venue,
+    venue: String,
     date: Date,
     startTime: Date,
     endTime: Date,
@@ -129,7 +129,7 @@ export class EventService {
     return await this.eventRepository.findOrganizerByEvent(eventId);
   }
 
-  async getVenueByEvent(eventId: number): Promise<Venue | null> {
+  async getVenueByEvent(eventId: number): Promise<String | null> {
     const event = await this.eventRepository.findEventById(eventId);
     if (!event) {
       throw new Error('Event not found');
