@@ -12,6 +12,7 @@ import { ReviewService } from './ReviewService';
 import { ReviewRepository } from '../repository/ReviewRepository';
 import { UserRepository } from '../repository/UserRepository';
 import { VenueRepository } from '../repository/VenueRepository';
+import { UpdateEventRequestDto } from '../dto/EventDto';
 
 @Injectable()
 export class EventService {
@@ -47,12 +48,30 @@ export class EventService {
   }
 
   // updateEvent in repository
-  async updateEvent(id: number, updatedEventData: Partial<Event>): Promise<Event | null> {
+  async updateEvent(id: number, updateDto: UpdateEventRequestDto): Promise<Event | null> {
     const event = await this.eventRepository.findEventById(id);
     if (!event) {
-      throw new Error('Event not found');
+        return null;
     }
-    Object.assign(event, updatedEventData);
+
+    const updates = {
+        ...updateDto,
+        date: updateDto.date ? new Date(updateDto.date) : undefined,
+        startTime: updateDto.startTime ? (() => {
+            const [hours, minutes] = updateDto.startTime!.split(':');
+            const date = new Date();
+            date.setHours(parseInt(hours), parseInt(minutes));
+            return date;
+        })() : undefined,
+        endTime: updateDto.endTime ? (() => {
+            const [hours, minutes] = updateDto.endTime!.split(':');
+            const date = new Date();
+            date.setHours(parseInt(hours), parseInt(minutes));
+            return date;
+        })() : undefined
+    };
+
+    Object.assign(event, updates);
     return await this.eventRepository.save(event);
   }
 
