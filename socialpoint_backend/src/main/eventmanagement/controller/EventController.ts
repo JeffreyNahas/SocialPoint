@@ -43,6 +43,9 @@ export class EventController {
                // If end time is earlier than start time, it's the next day
                endTime.setDate(endTime.getDate() + 1);
            }
+
+           console.log(createDto);
+           console.log("Attempting to create event @", venue);
    
            const event = await this.eventService.createEvent(
                createDto.name,
