@@ -1,6 +1,7 @@
 import axios from 'axios';
+import { VenueData } from '../components/VenueSelector';
 
-const API_URL = 'http://localhost:8080/api';
+const API_URL = 'http://localhost:3000/api';
 
 export interface CreateVenueDto {
   name: string;
@@ -15,7 +16,7 @@ export interface CreateEventDto {
   startTime: string;
   endTime: string;
   category: string;
-  venueId: number;
+  venueAddress: string;
   organizerId: number;
 }
 

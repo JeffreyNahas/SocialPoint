@@ -32,7 +32,7 @@ export class Event {
   
     @ManyToOne(() => Venue, (venue) => venue.events, { eager: true })
     @JoinColumn({ name: 'venue_id' })
-    venue!: Venue;
+    venue!: String;
   
     @Column({ type: 'date' })
     date!: Date;
@@ -94,7 +94,7 @@ export class Event {
         return this.category;
     }
 
-    public getVenue(): Venue {
+    public getVenue(): String {
         return this.venue;
     }
 
@@ -130,7 +130,7 @@ export class Event {
         this.category = category;
     }
 
-    public setVenue(venue: Venue): void {
+    public setVenue(venue: String): void {
         this.venue = venue;
     }
 
@@ -183,9 +183,9 @@ export class Event {
         this.addNotification(new Notification(`${this.name} End Time updated to ${newEndTime.toISOString()}`, new Date(), this, "attendee"));
         this.addNotification(new Notification(`$You have successfully updated the End Time for ${this.name}}`, new Date(), this, "organizer"));
     }
-    public updateVenue(newVenue: Venue): void {
+    public updateVenue(newVenue: String): void {
         this.venue = newVenue;
-        this.addNotification(new Notification(`${this.name} Venue updated to ${newVenue.getName()}`, new Date(), this, "attendee"));
+        this.addNotification(new Notification(`${this.name} Venue updated to ${newVenue}`, new Date(), this, "attendee"));
         this.addNotification(new Notification(`$You have successfully updated the Venue for ${this.name}}`, new Date(), this, "organizer"));
     }
 

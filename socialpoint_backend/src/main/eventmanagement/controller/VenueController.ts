@@ -10,9 +10,9 @@ export class VenueController {
         private readonly eventService: EventService
     ) {}
 
-    @Get(':id')
-    async getVenueById(@Param('id') id: string): Promise<Venue> {
-        const venue = await this.venueService.getVenueById(parseInt(id));
+    @Get(':address')
+    async getVenueByAddress(@Param('address') address: string): Promise<Venue> {
+        const venue = await this.venueService.getVenueByAddress(address);
         if (!venue) {
             throw new HttpException('Venue not found', HttpStatus.NOT_FOUND);
         }
@@ -24,9 +24,9 @@ export class VenueController {
         return this.venueService.createVenue(venue);
     }
 
-    @Put(':id')
-    async updateVenue(@Param('id') id: string, @Body() venue: Venue): Promise<Venue> {
-        const updatedVenue = await this.venueService.updateVenue(parseInt(id), venue);
+    @Put(':address')
+    async updateVenue(@Param('address') address: string, @Body() venue: Venue): Promise<Venue> {
+        const updatedVenue = await this.venueService.updateVenue(address, venue);
         if (!updatedVenue) {
             throw new HttpException('Venue not found', HttpStatus.NOT_FOUND);
         }
@@ -41,9 +41,9 @@ export class VenueController {
         }
     }
 
-    @Get(':id/events')
-    async getEventsByVenueId(@Param('id') id: string): Promise<Event[]> {
-        const events = await this.venueService.getEventsByVenueId(parseInt(id));
+    @Get(':address/events')
+    async getEventsByVenueId(@Param('address') address: string): Promise<Event[]> {
+        const events = await this.venueService.getEventsByVenueId(address);
         return Array.from(events);
     }
 }

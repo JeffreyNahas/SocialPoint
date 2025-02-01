@@ -14,12 +14,12 @@ export class VenueService {
         return await this.venueRepository.save(newVenue);
     }
 
-    async getVenueById(id: number): Promise<Venue | null> {
-        return await this.venueRepository.findVenueById(id);
+    async getVenueByAddress(address: string): Promise<Venue | null> {
+        return await this.venueRepository.findVenueByAddress(address);
     }
 
-    async updateVenue(id: number, updatedVenueData: Partial<Venue>): Promise<Venue | null> {
-        const venue = await this.getVenueById(id);
+    async updateVenue(address: string, updatedVenueData: Partial<Venue>): Promise<Venue | null> {
+        const venue = await this.getVenueByAddress(address);
         if (!venue) return null;
 
         Object.assign(venue, updatedVenueData);
@@ -31,8 +31,9 @@ export class VenueService {
         return result.affected ? result.affected > 0 : false;
     }
 
-    async getEventsByVenueId(id: number): Promise<Set<Event>> {
-        const venue = await this.getVenueById(id);
+    async getEventsByVenueId(address: string): Promise<Set<Event>> {
+        
+        const venue = await this.getVenueByAddress(address);
         if (!venue) return new Set();
         return await this.venueRepository.findEventsByVenue(venue);
     }
