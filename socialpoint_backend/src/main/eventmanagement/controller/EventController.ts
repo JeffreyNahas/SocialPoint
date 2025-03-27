@@ -3,7 +3,6 @@ import { EventService } from '../service/EventService';
 import { CreateEventRequestDto } from '../dto/EventDto';
 import { UpdateEventRequestDto } from '../dto/EventDto';
 import { EventResponseDto } from '../dto/EventDto';
-import { VenueService } from '../service/VenueService';
 import { UserService } from '../service/UserService';
 import { Category } from '../model/Category';
 import { Event } from '../model/Event';
@@ -12,21 +11,18 @@ import { Event } from '../model/Event';
 export class EventController {
    constructor(
        private readonly eventService: EventService,
-       private readonly venueService: VenueService,
        private readonly userService: UserService
    ) {}
 
    @Post()
    async createEvent(@Body() createDto: CreateEventRequestDto): Promise<EventResponseDto> {
        try {
-        //    const venue = await this.venueService.getVenueByAddress(createDto.venueAddress);
            const organizer = await this.userService.getUserById(createDto.organizerId);
-           const venue = createDto.venueAddress;
            
            if (!organizer) {
-               throw new HttpException('Venue or organizer not found', HttpStatus.NOT_FOUND);
+               throw new HttpException('Organizer not found', HttpStatus.NOT_FOUND);
            }
-   
+
            // Combine date and time properly
            const baseDate = new Date(createDto.date);
            
@@ -34,27 +30,26 @@ export class EventController {
            const [startHours, startMinutes] = createDto.startTime.split(':');
            const startTime = new Date(baseDate);
            startTime.setHours(parseInt(startHours), parseInt(startMinutes));
-   
+
            // Parse end time and combine with base date
            const [endHours, endMinutes] = createDto.endTime.split(':');
            const endTime = new Date(baseDate);
-           endTime.setHours(parseInt(endHours), parseInt(startMinutes));
+           endTime.setHours(parseInt(endHours), parseInt(endMinutes));
            if (parseInt(endHours) < parseInt(startHours)) {
                // If end time is earlier than start time, it's the next day
                endTime.setDate(endTime.getDate() + 1);
            }
 
-           console.log(createDto);
-           console.log("Attempting to create event @", venue);
-   
+           console.log("Creating event at location:", createDto.venueLocation);
+
            const event = await this.eventService.createEvent(
                createDto.name,
                createDto.description,
-               venue,
+               createDto.venueLocation,
                baseDate,
                startTime,
                endTime,
-               createDto.category,
+               Category[createDto.category as keyof typeof Category],
                organizer
            );
            return this.mapToResponseDto(event);
@@ -142,16 +137,19 @@ export class EventController {
         response.id = event.id;
         response.name = event.getName();
         response.description = event.getDescription();
-        response.venue = event.getVenue();
+        response.venueLocation = event.getVenueLocation() || '';
         response.date = event.getDate();
         response.startTime = event.getStartTime();
         response.endTime = event.getEndTime();
         response.category = event.getCategory();
+        
+        // Add null checks to prevent errors when organizer or userAccount is missing
         const organizer = event.getOrganizer();
         response.organizer = {
-            id: organizer.id,
-            fullName: organizer.getUserAccount().getFullName()
+            id: organizer?.id || 0,
+            fullName: organizer?.getUserAccount()?.getFullName() || 'Unknown Organizer'
         };
+        
         return response;
    }
 

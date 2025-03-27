@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EventRepository } from '../repository/EventRepository';
 import { Event } from '../model/Event';
-import { Venue } from '../model/Venue';
 import { Category } from '../model/Category';
 import { User } from '../model/User';
 import { UserService } from './UserService';
@@ -11,7 +10,6 @@ import { Notification } from '../model/Notification';
 import { ReviewService } from './ReviewService';
 import { ReviewRepository } from '../repository/ReviewRepository';
 import { UserRepository } from '../repository/UserRepository';
-import { VenueRepository } from '../repository/VenueRepository';
 import { UpdateEventRequestDto } from '../dto/EventDto';
 
 @Injectable()
@@ -20,7 +18,6 @@ export class EventService {
   constructor(
     private readonly eventRepository: EventRepository,
     private readonly userRepository: UserRepository,
-    private readonly venueRepository: VenueRepository,
     private readonly reviewRepository: ReviewRepository,
   ) {}
 
@@ -28,7 +25,7 @@ export class EventService {
   async createEvent(
     name: string,
     description: string,
-    venue: String,
+    venueLocation: string,
     date: Date,
     startTime: Date,
     endTime: Date,
@@ -38,7 +35,7 @@ export class EventService {
     const event = new Event();
     event.setName(name);
     event.setDescription(description);
-    event.setVenue(venue);
+    event.setVenueLocation(venueLocation);
     event.setDate(date);
     event.setStartTime(startTime);
     event.setEndTime(endTime);
@@ -87,7 +84,19 @@ export class EventService {
 
   // findAllevents in repository
   async getAllEvents(): Promise<Event[]> {
-    return await this.eventRepository.findAllEvents();
+    const events = await this.eventRepository.findAllEvents();
+    
+    // Additional logging to detect issues
+    console.log('Total events loaded:', events.length);
+    for (const event of events) {
+      console.log(`Event ${event.id} organizer:`, 
+        event.getOrganizer() ? 
+        `ID: ${event.getOrganizer().id}, Has UserAccount: ${!!event.getOrganizer().userAccount}` : 
+        'No organizer'
+      );
+    }
+    
+    return events;
   }
 
   // getEventsByFilters in repository
@@ -153,7 +162,7 @@ export class EventService {
     if (!event) {
       throw new Error('Event not found');
     }
-    return event.venue;
+    return event.venueLocation;
   }
 
   async addNotificationToEvent(eventId: number, notification: Notification): Promise<Event> {
@@ -166,7 +175,7 @@ export class EventService {
   }
 
   async getEventById(id: number): Promise<Event | null> {
-    return await this.eventRepository.findEventById(id);
+    return this.eventRepository.findEventById(id);
   }
 
 }

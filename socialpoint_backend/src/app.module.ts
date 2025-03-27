@@ -10,7 +10,6 @@ import { UserAccountRepository } from './main/eventmanagement/repository/UserAcc
 import { User } from './main/eventmanagement/model/User';
 import { UserAccount } from './main/eventmanagement/model/UserAccount';
 import { Event } from './main/eventmanagement/model/Event';
-import { Venue } from './main/eventmanagement/model/Venue';
 import { Review } from './main/eventmanagement/model/Review';
 import { Notification } from './main/eventmanagement/model/Notification';
 import { UserEventRole } from './main/eventmanagement/model/UserEventRole';
@@ -19,13 +18,10 @@ import { DataSource } from 'typeorm';
 import { EventRepository } from './main/eventmanagement/repository/EventRepository';
 import { EventController } from './main/eventmanagement/controller/EventController';
 import { EventService } from './main/eventmanagement/service/EventService';
-import { VenueService } from './main/eventmanagement/service/VenueService';
 import { ReviewRepository } from './main/eventmanagement/repository/ReviewRepository';
 import { ReviewService } from './main/eventmanagement/service/ReviewService';
 import { UserEventRoleRepository } from './main/eventmanagement/repository/UserEventRoleRepository';
-import { VenueRepository } from './main/eventmanagement/repository/VenueRepository';
 import { NotificationsRepository } from './main/eventmanagement/repository/NotificationRepository';
-import { VenueController } from './main/eventmanagement/controller/VenueController';
 import { ReviewController } from './main/eventmanagement/controller/ReviewController';
 @Module({
     imports: [
@@ -34,7 +30,6 @@ import { ReviewController } from './main/eventmanagement/controller/ReviewContro
             User, 
             UserAccount, 
             Event, 
-            Venue, 
             Review, 
             Notification, 
             UserEventRole,
@@ -45,7 +40,6 @@ import { ReviewController } from './main/eventmanagement/controller/ReviewContro
         UserController, 
         UserAccountController,
         EventController,
-        VenueController,
         ReviewController
     ],
     providers: [
@@ -54,12 +48,10 @@ import { ReviewController } from './main/eventmanagement/controller/ReviewContro
         UserRepository,
         EventRepository,
         EventService,
-        VenueService,
         ReviewService,
         ReviewRepository,
         NotificationsRepository,
         UserEventRoleRepository,
-        VenueRepository,
         UserAccountRepository
     ]
 })

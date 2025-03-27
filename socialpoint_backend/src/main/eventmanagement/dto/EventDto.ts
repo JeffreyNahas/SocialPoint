@@ -13,7 +13,7 @@ export class CreateEventRequestDto {
 
   @IsString()
   @IsNotEmpty()
-  venueAddress!: string;
+  venueLocation!: string;
 
   @IsString()
   @IsNotEmpty()
@@ -27,9 +27,9 @@ export class CreateEventRequestDto {
   @IsNotEmpty()
   endTime!: string;
 
-  @IsEnum(Category)
+  @IsString()
   @IsNotEmpty()
-  category!: Category;
+  category!: string;
 
   @IsNumber()
   @IsNotEmpty()
@@ -78,8 +78,8 @@ export class EventResponseDto {
   @IsString()
   description!: string;
 
-  @IsNotEmpty()
-  venue!: String;
+  @IsString()
+  venueLocation!: string;
 
   @IsDate()
   date!: Date;

@@ -16,7 +16,7 @@ export interface CreateEventDto {
   startTime: string;
   endTime: string;
   category: string;
-  venueAddress: string;
+  venueLocation: string;
   organizerId: number;
 }
 

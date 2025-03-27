@@ -41,8 +41,8 @@ export class User {
     })
     friends!: Set<User>;
 
-    @OneToMany(() => Event, event => event.organizer)
-    organizedEvents!: Set<Event>;
+    @OneToMany(() => Event, (event) => event.organizer)
+    eventsOrganizing!: Event[];
 
     // @ManyToMany(() => Event, event => event.listOfAttendees)
     // @JoinTable()
@@ -55,12 +55,11 @@ export class User {
         this.userEventRoles = new Set<UserEventRole>();
         this.friends = new Set<User>();
         // this.attendedEvents = new Set<Event>();
-        this.organizedEvents = new Set<Event>();
         this.reviews = new Set<Review>();
     }
 
-    public getUserAccount(): UserAccount {
-        return this.userAccount;
+    public getUserAccount(): UserAccount | null {
+        return this.userAccount || null;
     }
     
     public getUserEventRoleForEvent(event: Event): UserEventRole | null {

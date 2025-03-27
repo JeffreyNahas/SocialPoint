@@ -62,19 +62,30 @@ export class UserController {
        @Param('id') id: number,
        @Body() updateDto: UpdateUserRequestDto
    ): Promise<UserResponseDto> {
-       const user = await this.userService.getUserById(id);
-       if (!user) {
-           throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+       try {
+           const user = await this.userService.getUserById(id);
+           if (!user) {
+               throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+           }
+           
+           const userAccount = user.getUserAccount();
+           if (!userAccount) {
+               throw new HttpException('User account not found', HttpStatus.NOT_FOUND);
+           }
+           
+           if (updateDto.email) userAccount.setEmail(updateDto.email);
+           if (updateDto.fullName) userAccount.setFullName(updateDto.fullName);
+           if (updateDto.phoneNumber) userAccount.setPhoneNumber(updateDto.phoneNumber);
+           if (updateDto.password) userAccount.setPassword(updateDto.password);
+           
+           await this.userAccountService.updateUserAccount(userAccount.id, userAccount);
+           return this.mapToResponseDto(user);
+       } catch (error) {
+           throw new HttpException(
+               error instanceof Error ? error.message : 'Failed to update user', 
+               HttpStatus.BAD_REQUEST
+           );
        }
-       
-       const userAccount = user.getUserAccount();
-       if (updateDto.email) userAccount.setEmail(updateDto.email);
-       if (updateDto.fullName) userAccount.setFullName(updateDto.fullName);
-       if (updateDto.phoneNumber) userAccount.setPhoneNumber(updateDto.phoneNumber);
-       if (updateDto.password) userAccount.setPassword(updateDto.password);
-       
-       await this.userAccountService.updateUserAccount(userAccount.id, userAccount);
-       return this.mapToResponseDto(user);
    }
 
    @Delete(':id')
@@ -151,15 +162,27 @@ export class UserController {
 
    private mapToResponseDto(user: User): UserResponseDto {
        const response = new UserResponseDto();
-       const userAccount = user.getUserAccount();
        response.id = user.id;
-       response.email = userAccount.getEmail();
-       response.fullName = userAccount.getFullName();
-       response.phoneNumber = userAccount.getPhoneNumber();
-       response.friends = Array.from(user.getFriends()).map(friend => ({
-           id: friend.id,
-           fullName: friend.getUserAccount().getFullName()
-       }));
+       
+       const userAccount = user.getUserAccount();
+       if (userAccount) {
+           response.email = userAccount.getEmail();
+           response.fullName = userAccount.getFullName();
+           response.phoneNumber = userAccount.getPhoneNumber();
+       } else {
+           response.email = '';
+           response.fullName = '';
+           response.phoneNumber = '';
+       }
+       
+       response.friends = Array.from(user.getFriends()).map(friend => {
+           const friendAccount = friend.getUserAccount();
+           return {
+               id: friend.id,
+               fullName: friendAccount ? friendAccount.getFullName() : 'Unknown User'
+           };
+       });
+       
        response.eventRoles = Array.from(user.userEventRoles).map(role => ({
            userId: user.id,
            eventId: role.getEvent().id,

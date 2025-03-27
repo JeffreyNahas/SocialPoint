@@ -90,7 +90,7 @@ const MyEvents: React.FC = () => {
         startTime: formData.startTime,
         endTime: formData.endTime,
         category: formData.category,
-        venueAddress: selectedVenue?.address || '',
+        venueLocation: selectedVenue?.address || '',
         organizerId: 1 // Replace with actual logged-in user ID
       };
 
@@ -215,60 +215,10 @@ const MyEvents: React.FC = () => {
                   <option value="OTHER">Other</option>
                 </select>
 
-                <div className="venue-selection">
-                  <div className="venue-toggle">
-                    <button
-                      type="button"
-                      className={`venue-toggle-btn ${!isNewVenue ? 'active' : ''}`}
-                      onClick={() => setIsNewVenue(false)}
-                    >
-                      Select Existing Venue
-                    </button>
-                    <button
-                      type="button"
-                      className={`venue-toggle-btn ${isNewVenue ? 'active' : ''}`}
-                      onClick={() => setIsNewVenue(true)}
-                    >
-                      Create New Venue
-                    </button>
-                  </div>
-
-                  {isNewVenue ? (
-                    <div className="new-venue-inputs">
-                      <input
-                        type="text"
-                        name="venueName"
-                        placeholder="Venue Name"
-                        value={formData.venueName}
-                        onChange={handleInputChange}
-                        required
-                      />
-                      <input
-                        type="text"
-                        name="venueLocation"
-                        placeholder="Location"
-                        value={formData.venueLocation}
-                        onChange={handleInputChange}
-                        required
-                      />
-                      <input
-                        type="number"
-                        name="venueCapacity"
-                        placeholder="Capacity"
-                        value={formData.venueCapacity}
-                        onChange={handleInputChange}
-                        required
-                        min="1"
-                      />
-                    </div>
-                  ) : (
-                    <VenueSelector
-                      onVenueSelected={handleVenueSelected}
-                      selectedVenue={selectedVenue}
-                    />
-
-                  )}
-                </div>
+                <VenueSelector
+                  onVenueSelected={handleVenueSelected}
+                  selectedVenue={selectedVenue}
+                />
 
                 <div className="form-buttons">
                   <button type="submit">Create Event</button>
