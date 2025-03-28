@@ -7,19 +7,28 @@ import { UserService } from '../service/UserService';
 import { Category } from '../model/Category';
 import { Event } from '../model/Event';
 import { EventRepository } from '../repository/EventRepository';
+import { CurrentUserService } from '../service/CurrentUserService';
 
 @Controller('api/events')
 export class EventController {
    constructor(
        private readonly eventService: EventService,
        private readonly userService: UserService,
-       private readonly eventRepository: EventRepository
+       private readonly eventRepository: EventRepository,
+       private readonly currentUserService: CurrentUserService
    ) {}
 
    @Post()
    async createEvent(@Body() createDto: CreateEventRequestDto): Promise<EventResponseDto> {
        try {
-           const organizer = await this.userService.getUserById(createDto.organizerId);
+           // Get the current user ID (fallback to provided ID if not available)
+           const organizerId = this.currentUserService.getCurrentUserId() || createDto.organizerId;
+           
+           if (!organizerId) {
+               throw new HttpException('Organizer ID is required', HttpStatus.BAD_REQUEST);
+           }
+
+           const organizer = await this.userService.getUserById(organizerId);
            
            if (!organizer) {
                throw new HttpException('Organizer not found', HttpStatus.NOT_FOUND);

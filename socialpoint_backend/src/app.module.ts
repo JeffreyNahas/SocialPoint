@@ -23,6 +23,7 @@ import { ReviewService } from './main/eventmanagement/service/ReviewService';
 import { UserEventRoleRepository } from './main/eventmanagement/repository/UserEventRoleRepository';
 import { NotificationsRepository } from './main/eventmanagement/repository/NotificationRepository';
 import { ReviewController } from './main/eventmanagement/controller/ReviewController';
+import { CurrentUserService } from './main/eventmanagement/service/CurrentUserService';
 @Module({
     imports: [
         TypeOrmModule.forRoot(AppDataSource.options),
@@ -52,7 +53,8 @@ import { ReviewController } from './main/eventmanagement/controller/ReviewContro
         ReviewRepository,
         NotificationsRepository,
         UserEventRoleRepository,
-        UserAccountRepository
+        UserAccountRepository,
+        CurrentUserService
     ]
 })
 export class AppModule {}
