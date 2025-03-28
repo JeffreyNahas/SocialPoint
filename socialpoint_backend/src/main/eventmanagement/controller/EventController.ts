@@ -6,12 +6,14 @@ import { EventResponseDto } from '../dto/EventDto';
 import { UserService } from '../service/UserService';
 import { Category } from '../model/Category';
 import { Event } from '../model/Event';
+import { EventRepository } from '../repository/EventRepository';
 
 @Controller('api/events')
 export class EventController {
    constructor(
        private readonly eventService: EventService,
-       private readonly userService: UserService
+       private readonly userService: UserService,
+       private readonly eventRepository: EventRepository
    ) {}
 
    @Post()
@@ -70,18 +72,21 @@ export class EventController {
    }
 
    @Get()
-   async getEvents(@Query() filters: {
-       date?: Date,
-       venueId?: number,
-       category?: Category,
-       organizerId?: number,
-       location?: string,
-       country?: string,
-       city?: string,
-       state?: string,
-   }): Promise<EventResponseDto[]> {
-       const events = await this.eventService.getEventsByFilters(filters);
-       return events.map(event => this.mapToResponseDto(event));
+   async getAllEvents() {
+       const events = await this.eventRepository.findAllEvents();
+       
+       return events.map((event: Event) => ({
+           id: event.id,
+           name: event.name,
+           description: event.description,
+           date: event.date,
+           startTime: event.startTime,
+           endTime: event.endTime,
+           venueLocation: event.venueLocation || '',
+           category: event.category,
+           organizerId: event.organizer?.id || null,
+           organizerName: event.organizer?.userAccount?.getFullName() || 'Unknown Organizer'
+       }));
    }
 
    @Put(':id')

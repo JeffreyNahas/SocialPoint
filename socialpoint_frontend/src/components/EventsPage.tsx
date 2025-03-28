@@ -5,6 +5,33 @@ import './EventsPage.css';
 import MapModal from './MapModal';
 import AuthHeader from './AuthHeader';
 
+// Add userService
+const userService = {
+  // Simple cache for users
+  userCache: new Map(),
+  
+  async getUserById(id: number) {
+    // Return from cache if available
+    if (this.userCache.has(id)) {
+      return this.userCache.get(id);
+    }
+    
+    try {
+      const response = await axios.get(`http://localhost:3000/api/users/${id}`);
+      this.userCache.set(id, response.data);
+      return response.data;
+    } catch (err) {
+      console.error(`Error fetching user ${id}:`, err);
+      // Return a default user object if fetch fails
+      return {
+        getUserAccount: () => ({
+          getFullName: () => 'Unknown User'
+        })
+      };
+    }
+  }
+};
+
 interface Event {
   id: number;
   name: string;
@@ -14,11 +41,34 @@ interface Event {
   endTime: string;
   venueLocation: string;
   category: string;
-  organizer: {
-    id: number;
-    fullName: string;
-  };
+  organizerId: number;
 }
+
+const OrganizerName: React.FC<{organizerId: number}> = ({organizerId}) => {
+  const [name, setName] = useState('Unknown Organizer');
+  
+  useEffect(() => {
+    const loadUser = async () => {
+      if (!organizerId) return; // Skip if organizer ID is missing
+      
+      try {
+        const response = await axios.get(`http://localhost:3000/api/users/${organizerId}`);
+        const userData = response.data;
+        
+        if (userData && userData.fullName) {
+          setName(userData.fullName);
+        }
+      } catch (error) {
+        console.error('Error loading organizer:', error);
+        // Keep the default "Unknown Organizer" value
+      }
+    };
+    
+    loadUser();
+  }, [organizerId]);
+  
+  return <>{name}</>;
+};
 
 const EventsPage: React.FC = () => {
   const [events, setEvents] = useState<Event[]>([]);
@@ -231,7 +281,9 @@ const EventsPage: React.FC = () => {
                 <p className="event-description">{event.description}</p>
                 
                 <div className="event-footer">
-                  <span className="event-organizer">By {event.organizer.fullName}</span>
+                  <span className="event-organizer">
+                    By <OrganizerName organizerId={event.organizerId} />
+                  </span>
                   <Link to={`/events/${event.id}`} className="view-details">
                     View Details
                   </Link>
