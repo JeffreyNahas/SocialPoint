@@ -78,5 +78,12 @@ export class UserRepository {
             return null;
         }
     }
+
+    async findUserWithAttendedEvents(userId: number): Promise<User | null> {
+        return this.repository.findOne({
+            where: { id: userId },
+            relations: ['attendedEvents']
+        });
+    }
 }
         

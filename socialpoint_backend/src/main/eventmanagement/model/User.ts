@@ -41,12 +41,12 @@ export class User {
     })
     friends!: Set<User>;
 
+    // DO NOT NEED THIS ANYMORE SHOULD BE REMOVED BUT KEPT FOR DATABASE COMPATIBILITY
     @OneToMany(() => Event, (event) => event.organizer)
     eventsOrganizing!: Event[];
 
-    // @ManyToMany(() => Event, event => event.listOfAttendees)
-    // @JoinTable()
-    // attendedEvents!: Set<Event>;
+    @ManyToMany(() => Event, event => event.attendees)
+    attendedEvents!: Set<Event>;
 
     @OneToMany(() => Review, review => review.user)
     reviews!: Set<Review>;
@@ -54,33 +54,18 @@ export class User {
     constructor() {
         this.userEventRoles = new Set<UserEventRole>();
         this.friends = new Set<User>();
-        // this.attendedEvents = new Set<Event>();
+        this.attendedEvents = new Set<Event>();
         this.reviews = new Set<Review>();
+    }
+
+    public getAttendedEvents(): Set<Event> {
+        return this.attendedEvents;
     }
 
     public getUserAccount(): UserAccount | null {
         return this.userAccount || null;
     }
     
-    public getUserEventRoleForEvent(event: Event): UserEventRole | null {
-        for (const userEventRole of this.userEventRoles) {
-            if (userEventRole.event === event) {
-                return userEventRole;
-            }
-        }
-        return null;
-    }
-
-    public setUserEventRoleForEvent(UserRoleForEvent: UserEventRole, eventToSet: Event): void {
-        UserRoleForEvent.setEvent(eventToSet);
-    }
-
-    public addUserRoleForEvent(userEventRole: UserEventRole): void {
-        if (!this.userEventRoles) {
-            this.userEventRoles = new Set<UserEventRole>();
-        }
-        this.userEventRoles.add(userEventRole);
-    }
 
     public removeUserRoleForEvent(userEventRole: UserEventRole): void {
         this.userEventRoles.delete(userEventRole);
@@ -108,10 +93,6 @@ export class User {
 
     public getFriends(): Set<User> {
         return this.friends;
-    }
-
-    public hasUserRoleForEvent(event: Event): boolean {
-        return this.getUserEventRoleForEvent(event) !== null;
     }
 
     public toString(): string {

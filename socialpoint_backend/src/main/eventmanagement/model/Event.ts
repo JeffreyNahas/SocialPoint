@@ -52,6 +52,20 @@ export class Event {
     @ManyToOne(() => User, (user) => user.eventsOrganizing)
     @JoinColumn({ name: 'organizer_id' })
     organizer!: User;
+
+    @ManyToMany(() => User, user => user.attendedEvents)
+    @JoinTable({
+        name: 'event_attendees',
+        joinColumn: {
+            name: 'event_id',
+            referencedColumnName: 'id'
+        },
+        inverseJoinColumn: {
+            name: 'user_id',
+            referencedColumnName: 'id'
+        }
+    })
+    attendees!: User[];
   
     // @ManyToMany(() => User, user => user.attendedEvents)
     // @JoinTable({
@@ -222,5 +236,26 @@ export class Event {
     // public getAttendeesCount(): number {
     //     return this.listOfAttendees.size;
     // }
+
+    public getAttendees(): User[] {
+        return this.attendees;
+    }
+
+    public addAttendee(user: User): void {
+        if (!this.attendees) {
+            this.attendees = [];
+        }
+        if (!this.attendees.some(attendee => attendee.id === user.id)) {
+            this.attendees.push(user);
+        }
+    }
+
+    public removeAttendee(user: User): void {
+        this.attendees = this.attendees.filter(attendee => attendee.id !== user.id);
+    }
+
+    public hasAttendee(userId: number): boolean {
+        return this.attendees.some(attendee => attendee.id === userId);
+    }
 
 }

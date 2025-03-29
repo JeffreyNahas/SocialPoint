@@ -8,6 +8,8 @@ import { Category } from '../model/Category';
 import { Event } from '../model/Event';
 import { EventRepository } from '../repository/EventRepository';
 import { CurrentUserService } from '../service/CurrentUserService';
+import { UserResponseDto } from '../dto/UserDto';
+import { User } from '../model/User';
 
 @Controller('api/events')
 export class EventController {
@@ -71,6 +73,8 @@ export class EventController {
        }
    }
 
+
+
    @Get(':id')
    async getEvent(@Param('id') id: number): Promise<EventResponseDto> {
        const event = await this.eventService.getEventById(id);
@@ -96,6 +100,36 @@ export class EventController {
            organizerId: event.organizer?.id || null,
            organizerName: event.organizer?.userAccount?.getFullName() || 'Unknown Organizer'
        }));
+   }
+
+   @Post(':id/attendees')
+   async addAttendee(@Param('id') id: number): Promise<EventResponseDto> {
+        const currentUserId = this.currentUserService.getCurrentUserId();
+        if (!currentUserId) {
+            throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+        }
+        const event = await this.eventService.addAttendee(id, currentUserId);
+        return this.mapToResponseDto(event);
+   }
+
+   @Delete(':id/attendees')
+   async removeAttendee(@Param('id') id: number): Promise<EventResponseDto> {
+       const currentUserId = this.currentUserService.getCurrentUserId();
+       if (!currentUserId) {
+           throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+       }
+       if (await this.eventService.checkIfUserIsAttendee(id, currentUserId)) {
+        const event = await this.eventService.removeAttendee(id, currentUserId);
+        return this.mapToResponseDto(event);
+       } else {
+        throw new HttpException('User is not an attendee of this event', HttpStatus.BAD_REQUEST);
+       }
+   }
+
+   @Get(':id/attendees')
+   async getAttendees(@Param('id') id: number): Promise<UserResponseDto[]> {
+       const attendees = await this.eventService.getAttendeesByEvent(id);
+       return attendees.map(attendee => this.mapToUserResponseDto(attendee));
    }
 
    @Put(':id')
@@ -165,6 +199,24 @@ export class EventController {
         };
         
         return response;
+   }
+
+   private mapToUserResponseDto(user: User): UserResponseDto {
+       const response = new UserResponseDto();
+       response.id = user.id;
+       
+       const userAccount = user.getUserAccount();
+       if (userAccount) {
+           response.email = userAccount.getEmail();
+           response.fullName = userAccount.getFullName();
+           response.phoneNumber = userAccount.getPhoneNumber();
+       } else {
+           response.email = '';
+           response.fullName = '';
+           response.phoneNumber = '';
+       }
+       
+       return response;
    }
 
 }

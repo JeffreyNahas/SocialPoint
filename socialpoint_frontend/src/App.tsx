@@ -8,6 +8,7 @@ import MyEvents from './components/MyEvents';
 import EventsPage from './components/EventsPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import Profile from './components/Profile';
+import EventDetailsPage from './components/EventDetailsPage';
 
 const App: React.FC = () => {
   return (
@@ -28,6 +29,7 @@ const App: React.FC = () => {
             <Profile />
           </ProtectedRoute>
         } />
+        <Route path="/events/:id" element={<EventDetailsPage />} />
       </Routes>
     </Router>
   );

@@ -63,4 +63,14 @@ export class UserAccountService {
         return await this.userAccountRepository.save(userAccount);
     }
 
+    async updateProfilePicture(userId: number, profilePictureUrl: string): Promise<UserAccount> {
+        const userAccount = await this.getUserAccountById(userId);
+        if (!userAccount) {
+            throw new Error('User account not found');
+        }
+        
+        userAccount.setProfilePicture(profilePictureUrl);
+        return await this.userAccountRepository.save(userAccount);
+    }
+
 }

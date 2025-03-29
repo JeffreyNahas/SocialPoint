@@ -165,6 +165,65 @@ export class EventService {
     return event.venueLocation;
   }
 
+  async addAttendee(eventId: number, userId: number): Promise<Event> {
+    const event = await this.eventRepository.findEventById(eventId);
+    if (!event) {
+      throw new Error('Event not found');
+    }
+    const user = await this.userRepository.findUserById(userId);
+    if (!user) {
+      throw new Error('User not found');
+    }
+    event.addAttendee(user);
+    return await this.eventRepository.save(event);
+  }
+
+  async removeAttendee(eventId: number, userId: number): Promise<Event> {
+    const event = await this.eventRepository.findEventById(eventId);
+    if (!event) {
+      throw new Error('Event not found');
+    }
+    const user = await this.userRepository.findUserById(userId);
+    if (!user) {
+      throw new Error('User not found');
+    }
+    event.removeAttendee(user);
+    return await this.eventRepository.save(event);
+  }
+
+  async checkIfUserIsAttendee(eventId: number, userId: number): Promise<boolean> {
+    const event = await this.eventRepository.findEventById(eventId);
+    if (!event) {
+      throw new Error('Event not found');
+    }
+    const user = await this.userRepository.findUserById(userId);
+    if (!user) {
+      throw new Error('User not found');
+    }
+    return event.getAttendees().some(attendee => attendee.id === userId);
+  }
+
+  async getAttendeesByEvent(eventId: number): Promise<User[]> {
+    const event = await this.eventRepository.findEventById(eventId);
+    if (!event) {
+      throw new Error('Event not found');
+    }
+    return Array.from(event.getAttendees());
+  }
+
+  async getAttendedEvents(userId: number): Promise<Event[]> {
+    try {
+        const user = await this.userRepository.findUserWithAttendedEvents(userId);
+        if (!user) {
+            throw new Error(`User with ID ${userId} not found`);
+        }
+        return Array.from(user.attendedEvents);
+    } catch (error) {
+        console.error('Failed to fetch attended events:', error);
+        throw error;
+    }
+  }
+
   async addNotificationToEvent(eventId: number, notification: Notification): Promise<Event> {
     const event = await this.eventRepository.findEventById(eventId);
     if (!event) {

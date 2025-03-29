@@ -24,6 +24,13 @@ export class EventRepository {
         });
     }
 
+    async findEventsByOrganizerId(organizerId: number): Promise<Event[]> {
+        return await this.repository.find({
+            where: { organizer: { id: organizerId } },
+            relations: ['organizer', 'organizer.userAccount']
+        });
+    }
+
     async findAllEvents(): Promise<Event[]> {
         return this.repository.find({
             relations: {
@@ -33,14 +40,13 @@ export class EventRepository {
             }
         });
     }
-
-    // async findAttendeesByEvent(eventId: number): Promise<User[]> {
-    //     const event = await this.repository.findOne({ 
-    //         where: { id: eventId },
-    //         relations: ['listOfAttendees']
-    //     });
-    //     return Array.from(event?.listOfAttendees || []);
-    // }
+    async findAllAttendeesByEvent(eventId: number): Promise<User[]> {
+        const event = await this.repository.findOne({ 
+            where: { id: eventId },
+            relations: ['attendees']
+        });
+        return event?.attendees || [];
+    }
 
     async findOrganizerByEvent(eventId: number): Promise<User | null> {
         const event = await this.repository.findOne({ 
@@ -48,12 +54,6 @@ export class EventRepository {
             relations: ['organizer']
         });
         return event?.organizer || null;
-    }
-
-    async findEventsByVenue(venueAddress: string): Promise<Event[]> {
-        return await this.repository.find({ 
-            where: { venueLocation: venueAddress } 
-        });
     }
 
     async findEventsByFilters(filters: {
@@ -109,6 +109,13 @@ export class EventRepository {
 
     async deleteEvent(id: number) {
         return await this.repository.delete(id);
+    }
+
+    async findEventWithAttendees(eventId: number): Promise<Event | null> {
+        return this.repository.findOne({
+            where: { id: eventId },
+            relations: ['attendees']
+        });
     }
 
 }

@@ -160,6 +160,32 @@ const EventsPage: React.FC = () => {
     setFilterCategory(e.target.value);
   };
 
+  const handleRegister = async (eventId: number) => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        // Handle not logged in state - maybe redirect to login
+        alert('Please log in to register for events');
+        return;
+      }
+
+      await axios.post(
+        `http://localhost:3000/api/events/${eventId}/attendees`,
+        {},  // Empty body as we're using the current user
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      
+      // Provide feedback to the user
+      alert('Successfully registered for the event!');
+      
+      // Optionally refresh the page or event list
+      // fetchEvents(); // If you have a function to refetch events
+    } catch (error) {
+      console.error('Failed to register for event:', error);
+      alert('Failed to register for the event. You might already be registered.');
+    }
+  };
+
   if (loading) {
     return (
       <>
@@ -287,6 +313,12 @@ const EventsPage: React.FC = () => {
                   <Link to={`/events/${event.id}`} className="view-details">
                     View Details
                   </Link>
+                  <button 
+                    className="register-button" 
+                    onClick={() => handleRegister(event.id)}
+                  >
+                    Register
+                  </button>
                 </div>
               </div>
             ))
