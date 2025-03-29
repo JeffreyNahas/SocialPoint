@@ -4,4 +4,3 @@ This is an App that helps people connect over events. The app enables users to f
 
 **This Project is still under construction.**
 
-Expected Finish Date: 11 January 2025
