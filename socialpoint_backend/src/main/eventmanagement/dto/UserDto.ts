@@ -78,6 +78,7 @@ export class UserResponseDto {
 
  @IsArray()
  eventRoles!: UserEventRoleResponseDto[];
+
 }
 
 export class UserFriendResponseDto {
@@ -86,6 +87,20 @@ export class UserFriendResponseDto {
 
  @IsString()
  fullName!: string;
+}
+
+export class UpdateProfileInfoDto {
+ @IsString()
+ @IsOptional()
+ profilePictureUrl?: string;
+
+ @IsString()
+ @IsOptional()
+ fullName?: string;
+
+ @IsString()
+ @IsOptional()
+ phoneNumber?: string;
 }
 
 export class UserEventRoleResponseDto {

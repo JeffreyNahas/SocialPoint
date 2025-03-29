@@ -1,6 +1,5 @@
 import { EntityRepository, Repository } from "typeorm";
 import { Event } from "../model/Event";
-import { Venue } from "../model/Venue";
 import { Category } from "../model/Category";
 import { User } from "../model/User";
 import { Review } from "../model/Review";
@@ -21,23 +20,33 @@ export class EventRepository {
     async findEventById(id: number): Promise<Event | null> {
         return await this.repository.findOne({ 
             where: { id },
-            relations: ['venue', 'organizer'] 
+            relations: ['organizer']
+        });
+    }
+
+    async findEventsByOrganizerId(organizerId: number): Promise<Event[]> {
+        return await this.repository.find({
+            where: { organizer: { id: organizerId } },
+            relations: ['organizer', 'organizer.userAccount']
         });
     }
 
     async findAllEvents(): Promise<Event[]> {
-        return await this.repository.find({ 
-            relations: ['venue', 'organizer', 'reviews', 'notifications'] 
+        return this.repository.find({
+            relations: {
+                organizer: {
+                    userAccount: true
+                }
+            }
         });
     }
-
-    // async findAttendeesByEvent(eventId: number): Promise<User[]> {
-    //     const event = await this.repository.findOne({ 
-    //         where: { id: eventId },
-    //         relations: ['listOfAttendees']
-    //     });
-    //     return Array.from(event?.listOfAttendees || []);
-    // }
+    async findAllAttendeesByEvent(eventId: number): Promise<User[]> {
+        const event = await this.repository.findOne({ 
+            where: { id: eventId },
+            relations: ['attendees']
+        });
+        return event?.attendees || [];
+    }
 
     async findOrganizerByEvent(eventId: number): Promise<User | null> {
         const event = await this.repository.findOne({ 
@@ -47,60 +56,48 @@ export class EventRepository {
         return event?.organizer || null;
     }
 
-    async findEventsByVenue(venueId: number): Promise<Event[]> {
-        return await this.repository.find({ where: { venue: { id: venueId } } });
-    }
-
     async findEventsByFilters(filters: {
         date?: Date;
-        venueId?: number;
         category?: Category;
         organizerId?: number;
         location?: string;
         country?: string;
         city?: string;
         state?: string;
-
-
-      }): Promise<Event[]> {
+    }): Promise<Event[]> {
         const queryBuilder = this.repository.createQueryBuilder('event')
-          .leftJoinAndSelect('event.venue', 'venue')
-          .leftJoinAndSelect('event.organizer', 'organizer');
+            .leftJoinAndSelect('event.organizer', 'organizer');
         
         if (filters.date) {
-          queryBuilder.andWhere('event.date = :date', { date: filters.date });
-        }
-    
-        if (filters.venueId) {
-          queryBuilder.andWhere('venue.id = :venueId', { venueId: filters.venueId });
+            queryBuilder.andWhere('event.date = :date', { date: filters.date });
         }
     
         if (filters.category) {
-          queryBuilder.andWhere('event.category = :category', { category: filters.category });
+            queryBuilder.andWhere('event.category = :category', { category: filters.category });
         }
     
         if (filters.organizerId) {
-          queryBuilder.andWhere('organizer.id = :organizerId', { organizerId: filters.organizerId });
+            queryBuilder.andWhere('organizer.id = :organizerId', { organizerId: filters.organizerId });
         }
 
         if (filters.location) {
-          queryBuilder.andWhere('venue.location = :location', { location: filters.location });
+            queryBuilder.andWhere('event.venueLocation LIKE :location', { location: `%${filters.location}%` });
         }
 
         if (filters.country) {
-          queryBuilder.andWhere('venue.location.country = :country', { country: filters.country });
+            queryBuilder.andWhere('event.venueLocation.country = :country', { country: filters.country });
         }
 
         if (filters.city) {
-          queryBuilder.andWhere('venue.location.city = :city', { city: filters.city });
+            queryBuilder.andWhere('event.venueLocation.city = :city', { city: filters.city });
         }
 
         if (filters.state) {
-          queryBuilder.andWhere('venue.location.state = :state', { state: filters.state });
+            queryBuilder.andWhere('event.venueLocation.state = :state', { state: filters.state });
         }
     
         return await queryBuilder.getMany();
-      }
+    }
 
     async save(event: Event): Promise<Event> {
         return await this.repository.save(event);
@@ -112,6 +109,13 @@ export class EventRepository {
 
     async deleteEvent(id: number) {
         return await this.repository.delete(id);
+    }
+
+    async findEventWithAttendees(eventId: number): Promise<Event | null> {
+        return this.repository.findOne({
+            where: { id: eventId },
+            relations: ['attendees']
+        });
     }
 
 }

@@ -30,12 +30,26 @@ export class UserService {
     }
 
     // Update user details
-    async updateUser(id: number, updatedUserData: Partial<User>): Promise<User | null> {
-
-        const user = await this.getUserById(id);
-        if (!user) return null;
-
-        Object.assign(user, updatedUserData);
+    async updateUser(userId: number, updateDto: any): Promise<User> {
+        const user = await this.getUserById(userId);
+        if (!user) {
+            throw new Error(`User with ID ${userId} not found`);
+        }
+        
+        // Handle profile info update if it contains profilePictureUrl, etc.
+        if ('profilePictureUrl' in updateDto || 'fullName' in updateDto || 'phoneNumber' in updateDto) {
+            const userAccount = user.getUserAccount();
+            if (userAccount) {
+                if (updateDto.profilePictureUrl) userAccount.setProfilePicture(updateDto.profilePictureUrl);
+                if (updateDto.fullName) userAccount.setFullName(updateDto.fullName);
+                if (updateDto.phoneNumber) userAccount.setPhoneNumber(updateDto.phoneNumber);
+                await this.userAccountRepository.save(userAccount);
+            }
+            return user;
+        }
+        
+        // Original user update logic
+        Object.assign(user, updateDto);
         return await this.userRepository.save(user);
     }
 
@@ -78,31 +92,6 @@ export class UserService {
         return await this.userRepository.findFriends(user);
     }
 
-    // Add a user role for an event
-    async addUserRoleForEvent(userId: number, eventId: number, userEventRole: UserEventRole): Promise<User | null> {
-        const user = await this.getUserById(userId);
-        const event = await this.eventRepository.findEventById(eventId); // Assuming an EventService exists
-        if (!user || !event) {
-            throw new Error(`User or Event not found`);
-        }
-        user.setUserEventRoleForEvent(userEventRole, event);
-        return await this.userRepository.save(user);
-    }
-
-    // Remove a user role for an event
-    async removeUserRoleForEvent(userId: number, eventId: number): Promise<User | null> {
-        const user = await this.getUserById(userId);
-        const event = await this.eventRepository.findEventById(eventId); // Assuming an EventService exists
-        if (!user || !event) {
-            throw new Error(`User or Event not found`);
-        }
-        const userEventRole = user.getUserEventRoleForEvent(event);
-        if (userEventRole) {
-            user.removeUserRoleForEvent(userEventRole);
-        }
-        return await this.userRepository.save(user);
-    }
-
     // Check if a user is friends with another user
     async isFriend(userId: number, friendId: number): Promise<boolean> {
         const user = await this.getUserById(userId);
@@ -126,5 +115,49 @@ export class UserService {
             userAccounts.map(account => this.userRepository.findUserByUserAccountId(account.id))
         );
         return users.filter((user): user is User => user !== null);
+    }
+
+    async getOrganizedEventsByUserId(userId: number): Promise<Event[]> {
+        const user = await this.getUserById(userId);
+        if (!user) {
+            throw new Error(`User with ID ${userId} not found`);
+        }
+        return await this.eventRepository.findEventsByOrganizerId(user.id);
+    }
+
+    // Add method to register user for event
+    async registerForEvent(userId: number, eventId: number): Promise<User> {
+        const user = await this.userRepository.findUserWithAttendedEvents(userId);
+        if (!user) {
+            throw new Error(`User with ID ${userId} not found`);
+        }
+        
+        const event = await this.eventRepository.findEventWithAttendees(eventId);
+        if (!event) {
+            throw new Error(`Event with ID ${eventId} not found`);
+        }
+        
+        // Check if user is already registered
+        if (!Array.from(user.attendedEvents).some(e => e.id === eventId)) {
+            user.attendedEvents.add(event);
+            await this.userRepository.save(user);
+        }
+        
+        return user;
+    }
+
+    // Add method to unregister user from event
+    async unregisterFromEvent(userId: number, eventId: number): Promise<User> {
+        const user = await this.userRepository.findUserWithAttendedEvents(userId);
+        if (!user) {
+            throw new Error(`User with ID ${userId} not found`);
+        }
+        
+        user.attendedEvents = new Set(
+            Array.from(user.attendedEvents).filter(event => event.id !== eventId)
+        );
+        
+        await this.userRepository.save(user);
+        return user;
     }
 }

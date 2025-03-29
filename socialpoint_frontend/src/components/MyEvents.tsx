@@ -2,6 +2,9 @@ import React, { useState, useEffect, FormEvent } from 'react';
 import AuthHeader from './AuthHeader';
 import './MyEvents.css';
 import { createVenue, createEvent, getVenues, CreateVenueDto, CreateEventDto } from '../services/eventService';
+import { VenueSelector, VenueData } from './VenueSelector';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 interface Event {
   id: number;
@@ -10,10 +13,7 @@ interface Event {
   date: string;
   startTime: string;
   endTime: string;
-  venue: {
-    name: string;
-    location: string;
-  };
+  venueLocation: string;
   category: string;
 }
 
@@ -35,6 +35,10 @@ const MyEvents: React.FC = () => {
     venueCapacity: '',
     selectedVenueId: ''
   });
+  const [selectedVenue, setSelectedVenue] = useState<VenueData | null>(null);
+  const [attendedEventsLoading, setAttendedEventsLoading] = useState(true);
+  const [attendedEventsError, setAttendedEventsError] = useState(null);
+  const navigate = useNavigate();
 
   // Fetch venues when component mounts
   useEffect(() => {
@@ -48,6 +52,64 @@ const MyEvents: React.FC = () => {
     };
     fetchVenues();
   }, []);
+
+  // Add this new useEffect to fetch organized events
+  useEffect(() => {
+    const fetchOrganizedEvents = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) return;
+        
+        const response = await axios.get(
+          'http://localhost:3000/api/users/organized-events',
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        
+        // Sort events by date (most recent first)
+        const sortedEvents = response.data.sort((a: Event, b: Event) => 
+          new Date(b.date).getTime() - new Date(a.date).getTime()
+        );
+        
+        setOrganizedEvents(sortedEvents);
+      } catch (error) {
+        console.error('Failed to fetch organized events:', error);
+      }
+    };
+    
+    fetchOrganizedEvents();
+  }, []);
+
+  useEffect(() => {
+    fetchAttendedEvents();
+  }, []);
+
+  const fetchAttendedEvents = async () => {
+    try {
+      setAttendedEventsLoading(true);
+      const token = localStorage.getItem('token');
+      if (!token) {
+        setAttendedEventsLoading(false);
+        return;
+      }
+
+      const response = await axios.get('http://localhost:3000/api/users/attended-events', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      setAttendedEvents(response.data);
+      setAttendedEventsLoading(false);
+    } catch (err) {
+      console.error('Failed to fetch attended events:', err);
+      setAttendedEventsLoading(false);
+    }
+  };
+
+  const handleVenueSelected = (venueData: VenueData | null) => {
+    if (venueData) {
+      setSelectedVenue(venueData);
+    }
+  }
+  
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setFormData({
@@ -82,7 +144,7 @@ const MyEvents: React.FC = () => {
         startTime: formData.startTime,
         endTime: formData.endTime,
         category: formData.category,
-        venueId: venueId,
+        venueLocation: selectedVenue?.address || '',
         organizerId: 1 // Replace with actual logged-in user ID
       };
 
@@ -92,6 +154,33 @@ const MyEvents: React.FC = () => {
       // Add function to fetch and update events
     } catch (error) {
       console.error('Failed to create event:', error);
+    }
+  };
+
+  // Helper function to format date
+  const formatDate = (dateString: string) => {
+    const options: Intl.DateTimeFormatOptions = { month: 'short', day: 'numeric' };
+    return new Date(dateString).toLocaleDateString(undefined, options);
+  };
+
+  const handleUnregister = async (eventId: number) => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        alert('You must be logged in to unregister from an event');
+        return;
+      }
+
+      await axios.delete(`http://localhost:3000/api/events/${eventId}/attendees`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      // Refresh the attended events list
+      fetchAttendedEvents();
+      alert('Successfully unregistered from event');
+    } catch (err) {
+      console.error('Failed to unregister from event:', err);
+      alert('Failed to unregister from event. Please try again.');
     }
   };
 
@@ -112,41 +201,101 @@ const MyEvents: React.FC = () => {
         <div className="events-sections">
           <div className="events-section">
             <h2>Organized Events</h2>
-            <div className="events-grid">
-              {organizedEvents.length === 0 ? (
-                <p>No organized events yet</p>
-              ) : (
-                organizedEvents.map(event => (
-                  <div key={event.id} className="event-card">
-                    <h3>{event.name}</h3>
-                    <p>{event.description}</p>
-                    <p>Date: {new Date(event.date).toLocaleDateString()}</p>
-                    <p>Venue: {event.venue.name}</p>
-                    <p>Category: {event.category}</p>
-                  </div>
-                ))
-              )}
+            <div className="events-scroll-container">
+              <div className="events-scroll-wrapper">
+                {organizedEvents.length === 0 ? (
+                  <p className="no-events-message">No organized events yet</p>
+                ) : (
+                  organizedEvents.map(event => (
+                    <div key={event.id} className="event-mini-card">
+                      <div className="event-mini-header">
+                        <span className="event-mini-date">{formatDate(event.date)}</span>
+                      </div>
+                      <h3 className="event-mini-title">{event.name}</h3>
+                      <div className="event-mini-location">
+                        <i className="location-icon">📍</i>
+                        <span>{event.venueLocation || 'No location'}</span>
+                      </div>
+                      <button 
+                        className="event-mini-button"
+                        onClick={() => navigate(`/events/${event.id}`)}
+                      >
+                        More Info
+                      </button>
+                    </div>
+                  ))
+                )}
+              </div>
             </div>
           </div>
 
-          <div className="events-section">
-            <h2>Attended Events</h2>
-            <div className="events-grid">
-              {attendedEvents.length === 0 ? (
-                <p>No attended events yet</p>
-              ) : (
-                attendedEvents.map(event => (
-                  <div key={event.id} className="event-card">
-                    <h3>{event.name}</h3>
-                    <p>{event.description}</p>
-                    <p>Date: {new Date(event.date).toLocaleDateString()}</p>
-                    <p>Venue: {event.venue.name}</p>
-                    <p>Category: {event.category}</p>
+          <section className="attended-events-section">
+            <h2 className="white-heading">Events I'm Attending</h2>
+            
+            {attendedEventsLoading ? (
+              <div className="loading">Loading attended events...</div>
+            ) : attendedEventsError ? (
+              <div className="error">{attendedEventsError}</div>
+            ) : attendedEvents.length === 0 ? (
+              <div className="events-scroll-container">
+                <div className="events-scroll-wrapper">
+                  <div className="event-mini-card">
+                    <div className="event-mini-header">
+                      <span className="event-mini-date">{new Date().toLocaleDateString()}</span>
+                      <span className="demo-badge-mini">Demo</span>
+                    </div>
+                    <h3 className="event-mini-title">Annual Tech Conference 2023</h3>
+                    <div className="event-mini-location">
+                      <i className="location-icon">📍</i>
+                      <span>San Francisco Convention Center</span>
+                    </div>
+                    <div className="mini-card-buttons">
+                      <button
+                        className="review-mini-button"
+                        onClick={() => navigate(`/events/999?action=review`)}
+                      >
+                        Write Review
+                      </button>
+                      <button className="unregister-mini-button">
+                        Unregister
+                      </button>
+                    </div>
                   </div>
-                ))
-              )}
-            </div>
-          </div>
+                </div>
+              </div>
+            ) : (
+              <div className="events-scroll-container">
+                <div className="events-scroll-wrapper">
+                  {attendedEvents.map(event => (
+                    <div key={event.id} className="event-mini-card">
+                      <div className="event-mini-header">
+                        <span className="event-mini-date">{formatDate(event.date)}</span>
+                      </div>
+                      <h3 className="event-mini-title">{event.name}</h3>
+                      <div className="event-mini-location">
+                        <i className="location-icon">📍</i>
+                        <span>{event.venueLocation || 'No location'}</span>
+                      </div>
+                      <div className="mini-card-buttons">
+                        <button
+                          className="review-mini-button"
+                          onClick={() => navigate(`/events/${event.id}?action=review`)}
+                        >
+                          Write Review
+                        </button>
+                        <button 
+                          className="unregister-mini-button"
+                          onClick={() => handleUnregister(event.id)}
+                        >
+                          Unregister
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </section>
         </div>
 
         {showCreateForm && (
@@ -207,70 +356,10 @@ const MyEvents: React.FC = () => {
                   <option value="OTHER">Other</option>
                 </select>
 
-                <div className="venue-selection">
-                  <div className="venue-toggle">
-                    <button
-                      type="button"
-                      className={`venue-toggle-btn ${!isNewVenue ? 'active' : ''}`}
-                      onClick={() => setIsNewVenue(false)}
-                    >
-                      Select Existing Venue
-                    </button>
-                    <button
-                      type="button"
-                      className={`venue-toggle-btn ${isNewVenue ? 'active' : ''}`}
-                      onClick={() => setIsNewVenue(true)}
-                    >
-                      Create New Venue
-                    </button>
-                  </div>
-
-                  {isNewVenue ? (
-                    <div className="new-venue-inputs">
-                      <input
-                        type="text"
-                        name="venueName"
-                        placeholder="Venue Name"
-                        value={formData.venueName}
-                        onChange={handleInputChange}
-                        required
-                      />
-                      <input
-                        type="text"
-                        name="venueLocation"
-                        placeholder="Location"
-                        value={formData.venueLocation}
-                        onChange={handleInputChange}
-                        required
-                      />
-                      <input
-                        type="number"
-                        name="venueCapacity"
-                        placeholder="Capacity"
-                        value={formData.venueCapacity}
-                        onChange={handleInputChange}
-                        required
-                        min="1"
-                      />
-                    </div>
-                  ) : (
-                    <div className="existing-venue-select">
-                      <select
-                        name="selectedVenueId"
-                        value={formData.selectedVenueId}
-                        onChange={handleInputChange}
-                        required
-                      >
-                        <option value="">Select a Venue</option>
-                        {venues.map(venue => (
-                          <option key={venue.id} value={venue.id}>
-                            {venue.name} - {venue.location}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  )}
-                </div>
+                <VenueSelector
+                  onVenueSelected={handleVenueSelected}
+                  selectedVenue={selectedVenue}
+                />
 
                 <div className="form-buttons">
                   <button type="submit">Create Event</button>

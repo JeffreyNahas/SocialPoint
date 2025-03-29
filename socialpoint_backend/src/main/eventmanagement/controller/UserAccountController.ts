@@ -5,10 +5,14 @@ import { LoginUserAccountRequestDto } from '../dto/UserAccountDto';
 import { UserAccountResponseDto } from '../dto/UserAccountDto';
 import { UserAccount } from '../model/UserAccount';
 import { CreateUserRequestDto } from '../dto/UserDto';
+import { CurrentUserService } from '../service/CurrentUserService';
 
 @Controller('api/user-accounts')
 export class UserAccountController {
-   constructor(private readonly userAccountService: UserAccountService) {}
+   constructor(
+       private readonly userAccountService: UserAccountService,
+       private readonly currentUserService: CurrentUserService
+   ) {}
 
    @Post()
    async createUserAccount(@Body() createDto: CreateUserRequestDto) {
@@ -33,15 +37,25 @@ export class UserAccountController {
    }
 
    @Post('login')
-   async login(@Body() loginDto: LoginUserAccountRequestDto): Promise<UserAccountResponseDto> {
+   async login(@Body() loginDto: LoginUserAccountRequestDto): Promise<any> {
        try {
-           const userAccount = await this.userAccountService.loginUserAccount(
-               loginDto.email,
-               loginDto.password
-           );
-           return this.mapToResponseDto(userAccount);
+           const { email, password } = loginDto;
+           const userAccount = await this.userAccountService.loginUserAccount(email, password);
+           
+           // Set the current user ID based on email
+           await this.currentUserService.setCurrentUserByEmail(email);
+           
+           return {
+               id: userAccount.id,
+               email: userAccount.email,
+               fullName: userAccount.fullName,
+               sessionToken: userAccount.sessionToken
+           };
        } catch (error) {
-           throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);
+           throw new HttpException(
+               error instanceof Error ? error.message : 'Login failed',
+               error instanceof HttpException ? error.getStatus() : HttpStatus.UNAUTHORIZED
+           );
        }
    }
 

@@ -30,6 +30,9 @@ export class UserAccount {
   @Column({ nullable: true })
   sessionToken?: string;
 
+  @Column({ type: 'varchar', nullable: true })
+  profilePicture?: string;
+
   @CreateDateColumn()
   private createdAt!: Date;
 
@@ -69,6 +72,10 @@ export class UserAccount {
 
   public getUpdatedAt(): Date {
     return this.updatedAt;
+  }
+
+  public getProfilePicture(): string | null {
+    return this.profilePicture || null;
   }
 
   public setFullName(fullName: string): void {
@@ -114,5 +121,9 @@ export class UserAccount {
   // Method to check if a user is logged in by verifying session token
   public isLoggedIn(token: string): boolean {
     return this.sessionToken === token;
+  }
+
+  public setProfilePicture(profilePicture: string | null): void {
+    this.profilePicture = profilePicture || undefined;
   }
 }
