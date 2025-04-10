@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
 import axios from 'axios';
+import { API_URL } from '../config';
 import './ProfilePictureUpload.css';
 
 interface ProfilePictureUploadProps {
@@ -76,7 +77,7 @@ const ProfilePictureUpload: React.FC<ProfilePictureUploadProps> = ({
       }
       
       await axios.put(
-        'http://localhost:3000/api/users/user-account',
+        `${API_URL}/users/user-account`,
         { profilePictureUrl: pictureUrl },
         { headers: { Authorization: `Bearer ${token}` } }
       );

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
+import { API_URL } from '../config';
 import AuthHeader from './AuthHeader';
 import './EventDetailsPage.css';
 
@@ -52,6 +53,7 @@ const EventDetailsPage: React.FC = () => {
   const [expandedReview, setExpandedReview] = useState<number | null>(null);
   const [userRole, setUserRole] = useState<'organizer' | 'attendee' | 'visitor'>('visitor');
   const reviewTextAreaRef = useRef<HTMLTextAreaElement>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchEventDetails = async () => {
@@ -60,7 +62,7 @@ const EventDetailsPage: React.FC = () => {
         const token = localStorage.getItem('token');
         
         // Fetch event details
-        const eventResponse = await axios.get(`http://localhost:3000/api/events/${id}`, {
+        const eventResponse = await axios.get(`${API_URL}/events/${id}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         
@@ -130,7 +132,8 @@ const EventDetailsPage: React.FC = () => {
         
         setLoading(false);
       } catch (error) {
-        console.error('Failed to fetch event details:', error);
+        console.error('Error fetching event details:', error);
+        setError('Failed to load event details');
         setLoading(false);
       }
     };

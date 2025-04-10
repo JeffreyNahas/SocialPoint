@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+import { API_URL } from '../config';
 import './EventsPage.css';
 import MapModal from './MapModal';
 import AuthHeader from './AuthHeader';
@@ -22,10 +23,10 @@ const OrganizerName: React.FC<{organizerId: number}> = ({organizerId}) => {
   
   useEffect(() => {
     const loadUser = async () => {
-      if (!organizerId) return; // Skip if organizer ID is missing
+      if (!organizerId) return;
       
       try {
-        const response = await axios.get(`http://localhost:3000/api/users/${organizerId}`);
+        const response = await axios.get(`${API_URL}/users/${organizerId}`);
         const userData = response.data;
         
         if (userData && userData.fullName) {
@@ -33,7 +34,6 @@ const OrganizerName: React.FC<{organizerId: number}> = ({organizerId}) => {
         }
       } catch (error) {
         console.error('Error loading organizer:', error);
-        // Keep the default "Unknown Organizer" value
       }
     };
     
@@ -57,7 +57,7 @@ const EventsPage: React.FC = () => {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/api/events');
+        const response = await axios.get(`${API_URL}/events`);
         setEvents(response.data);
         setFilteredEvents(response.data);
         setLoading(false);
@@ -138,7 +138,7 @@ const EventsPage: React.FC = () => {
       }
 
       await axios.post(
-        `http://localhost:3000/api/events/${eventId}/attendees`,
+        `${API_URL}/events/${eventId}/attendees`,
         {},  // Empty body as we're using the current user
         { headers: { Authorization: `Bearer ${token}` } }
       );

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import './LoginPage.css';
 import Header_login from './Header_login';
 import { useNavigate } from 'react-router-dom';
+import { API_URL } from '../config';
 
 interface LoginForm {
   email: string;
@@ -29,7 +30,7 @@ const LoginPage: React.FC = () => {
     setError('');
 
     try {
-      const response = await fetch('http://localhost:3000/api/user-accounts/login', {
+      const response = await fetch(`${API_URL}/user-accounts/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

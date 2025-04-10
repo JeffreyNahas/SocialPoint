@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { API_URL } from '../config';
 import './SignUpPage.css';
 import Header_login from './Header_login';
 
@@ -58,8 +59,7 @@ const SignUpPage: React.FC = () => {
     }
 
     try {
-      // Single API call to create both user and user account
-      const response = await fetch('http://localhost:3000/api/users', {
+      const response = await fetch(`${API_URL}/users`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
