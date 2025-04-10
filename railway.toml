@@ -1,6 +1,6 @@
 [build]
 builder = "nixpacks"
-buildCommand = "cd socialpoint_backend && npm install"
+buildCommand = "cd socialpoint_backend && npm install && npm run build"
 
 [deploy]
 startCommand = "cd socialpoint_backend && npm run start"
@@ -9,6 +9,13 @@ restartPolicyMaxRetries = 10
 
 [nixpacks]
 workdir = "socialpoint_backend"
+
+# Specify Node.js version
+[env]
+NODE_VERSION = "21"
+
+# Database connection string
+DATABASE_URL = "postgresql://postgres:KnlSCtrSSPRgFJdHTYmLzWeSzxBEWVcb@interchange.proxy.rlwy.net:53401/railway"
 
 # Link database plugin
 [plugins.postgres]

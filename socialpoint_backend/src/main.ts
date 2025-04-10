@@ -1,7 +1,18 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import { AppDataSource } from './data-source';
 
 async function bootstrap() {
+  // Initialize database connection
+  console.log('Initializing database connection...');
+  try {
+    await AppDataSource.initialize();
+    console.log('Database connection initialized successfully');
+  } catch (error) {
+    console.error('Error initializing database connection:', error);
+    throw error;
+  }
+
   const app = await NestFactory.create(AppModule);
   
   console.log('Setting up CORS...');
