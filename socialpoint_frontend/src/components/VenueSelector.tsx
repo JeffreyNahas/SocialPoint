@@ -9,14 +9,12 @@ export interface VenueData{
     longitude?: number;
 }
 
-interface VenueSelectorProps{
-    onVenueSelected: (Venue: VenueData | null) => void;
-    selectedVenue: VenueData | null;
+interface VenueSelectorProps {
+    onVenueSelected: (venue: VenueData | null) => void;
 }
 
 export const VenueSelector: React.FC<VenueSelectorProps> = ({
     onVenueSelected,
-    selectedVenue = '',
 }) => {
 
     const inputRef = useRef<HTMLInputElement>(null);

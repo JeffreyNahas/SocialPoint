@@ -5,33 +5,6 @@ import './EventsPage.css';
 import MapModal from './MapModal';
 import AuthHeader from './AuthHeader';
 
-// Add userService
-const userService = {
-  // Simple cache for users
-  userCache: new Map(),
-  
-  async getUserById(id: number) {
-    // Return from cache if available
-    if (this.userCache.has(id)) {
-      return this.userCache.get(id);
-    }
-    
-    try {
-      const response = await axios.get(`http://localhost:3000/api/users/${id}`);
-      this.userCache.set(id, response.data);
-      return response.data;
-    } catch (err) {
-      console.error(`Error fetching user ${id}:`, err);
-      // Return a default user object if fetch fails
-      return {
-        getUserAccount: () => ({
-          getFullName: () => 'Unknown User'
-        })
-      };
-    }
-  }
-};
-
 interface Event {
   id: number;
   name: string;
@@ -145,11 +118,6 @@ const EventsPage: React.FC = () => {
       'OTHER': '#757575'     // Gray
     };
     return colors[category] || colors.OTHER;
-  };
-
-  const getGoogleMapsUrl = (location: string) => {
-    if (!location) return '';
-    return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(location)}`;
   };
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {

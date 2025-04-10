@@ -1,7 +1,7 @@
 import React, { useState, useEffect, FormEvent } from 'react';
 import AuthHeader from './AuthHeader';
 import './MyEvents.css';
-import { createVenue, createEvent, getVenues, CreateVenueDto, CreateEventDto } from '../services/eventService';
+import { createEvent, CreateEventDto } from '../services/eventService';
 import { VenueSelector, VenueData } from './VenueSelector';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -21,8 +21,6 @@ const MyEvents: React.FC = () => {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [attendedEvents, setAttendedEvents] = useState<Event[]>([]);
   const [organizedEvents, setOrganizedEvents] = useState<Event[]>([]);
-  const [isNewVenue, setIsNewVenue] = useState(false);
-  const [venues, setVenues] = useState<Array<{ id: number; name: string; location: string }>>([]);
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -37,18 +35,12 @@ const MyEvents: React.FC = () => {
   });
   const [selectedVenue, setSelectedVenue] = useState<VenueData | null>(null);
   const [attendedEventsLoading, setAttendedEventsLoading] = useState(true);
-  const [attendedEventsError, setAttendedEventsError] = useState(null);
   const navigate = useNavigate();
 
   // Fetch venues when component mounts
   useEffect(() => {
     const fetchVenues = async () => {
-      try {
-        const venueData = await getVenues();
-        setVenues(venueData);
-      } catch (error) {
-        console.error('Failed to fetch venues:', error);
-      }
+
     };
     fetchVenues();
   }, []);
@@ -121,37 +113,21 @@ const MyEvents: React.FC = () => {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     try {
-      let venueId: number;
-
-      if (isNewVenue) {
-        // Create new venue first
-        const venueData: CreateVenueDto = {
-          name: formData.venueName,
-          location: formData.venueLocation,
-          capacity: parseInt(formData.venueCapacity)
+      if (selectedVenue) {
+        const eventData: CreateEventDto = {
+          name: formData.name,
+          description: formData.description,
+          date: formData.date,
+          startTime: formData.startTime,
+          endTime: formData.endTime,
+          category: formData.category,
+          venueLocation: selectedVenue.address,
+          organizerId: 1 // Replace with actual logged-in user ID
         };
-        const newVenue = await createVenue(venueData);
-        venueId = newVenue.id;
-      } else {
-        venueId = parseInt(formData.selectedVenueId);
+
+        await createEvent(eventData);
+        setShowCreateForm(false);
       }
-
-      // Create event with the venue ID
-      const eventData: CreateEventDto = {
-        name: formData.name,
-        description: formData.description,
-        date: formData.date,
-        startTime: formData.startTime,
-        endTime: formData.endTime,
-        category: formData.category,
-        venueLocation: selectedVenue?.address || '',
-        organizerId: 1 // Replace with actual logged-in user ID
-      };
-
-      await createEvent(eventData);
-      setShowCreateForm(false);
-      // Refresh events list
-      // Add function to fetch and update events
     } catch (error) {
       console.error('Failed to create event:', error);
     }
@@ -234,8 +210,6 @@ const MyEvents: React.FC = () => {
             
             {attendedEventsLoading ? (
               <div className="loading">Loading attended events...</div>
-            ) : attendedEventsError ? (
-              <div className="error">{attendedEventsError}</div>
             ) : attendedEvents.length === 0 ? (
               <div className="events-scroll-container">
                 <div className="events-scroll-wrapper">
@@ -358,7 +332,6 @@ const MyEvents: React.FC = () => {
 
                 <VenueSelector
                   onVenueSelected={handleVenueSelected}
-                  selectedVenue={selectedVenue}
                 />
 
                 <div className="form-buttons">

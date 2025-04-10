@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { VenueData } from '../components/VenueSelector';
 import { API_URL } from '../config';
 
 export interface CreateVenueDto {

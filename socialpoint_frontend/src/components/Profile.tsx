@@ -23,7 +23,7 @@ const Profile: React.FC = () => {
     email: '',
     phoneNumber: ''
   });
-  const [friends, setFriends] = useState<Friend[]>([]);
+  const [friends, _] = useState<Friend[]>([]);
 
   useEffect(() => {
     // Fetch user profile and friends
