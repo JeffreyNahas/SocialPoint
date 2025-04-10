@@ -1,8 +1,9 @@
 // src/services/api.ts
 import axios from 'axios';
+import { API_URL } from '../config';
 
 export const api = axios.create({
-  baseURL: 'http://localhost:3000/api', // Your backend URL
+  baseURL: API_URL, // Using the environment variable from config
   headers: {
     'Content-Type': 'application/json'
   }
