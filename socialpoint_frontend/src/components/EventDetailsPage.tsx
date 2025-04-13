@@ -53,7 +53,6 @@ const EventDetailsPage: React.FC = () => {
   const [expandedReview, setExpandedReview] = useState<number | null>(null);
   const [userRole, setUserRole] = useState<'organizer' | 'attendee' | 'visitor'>('visitor');
   const reviewTextAreaRef = useRef<HTMLTextAreaElement>(null);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchEventDetails = async () => {
@@ -133,7 +132,6 @@ const EventDetailsPage: React.FC = () => {
         setLoading(false);
       } catch (_) {
         console.error('Error fetching event details');
-        setError('Failed to load event details');
         setLoading(false);
       }
     };

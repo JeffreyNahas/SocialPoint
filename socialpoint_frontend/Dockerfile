@@ -11,7 +11,7 @@ ENV VITE_API_URL=https://socialpoint-production.up.railway.app/api
 COPY package*.json ./
 
 # Install dependencies
-RUN npm ci
+RUN npm install
 
 # Copy the rest of the application
 COPY . .
@@ -29,7 +29,7 @@ COPY --from=build /app/dist ./dist
 COPY --from=build /app/package*.json ./
 
 # Install only production dependencies
-RUN npm ci --only=production
+RUN npm install --only=production
 
 # Expose the port the app runs on
 EXPOSE 3000
