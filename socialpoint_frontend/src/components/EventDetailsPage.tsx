@@ -131,8 +131,8 @@ const EventDetailsPage: React.FC = () => {
         }
         
         setLoading(false);
-      } catch (error) {
-        console.error('Error fetching event details:', error);
+      } catch (_) {
+        console.error('Error fetching event details');
         setError('Failed to load event details');
         setLoading(false);
       }
