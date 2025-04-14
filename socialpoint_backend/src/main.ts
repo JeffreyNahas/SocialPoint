@@ -20,7 +20,8 @@ async function bootstrap() {
     origin: [
       process.env.FRONTEND_URL || 'http://localhost:5173',
       'http://localhost:3000',
-      'http://10.122.37.246:3000'
+      'http://10.122.37.246:3000',
+      'https://observant-rejoicing-production.up.railway.app'
     ],
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true,
